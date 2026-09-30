@@ -32,5 +32,7 @@ void onHeaderRecvCb(nghttp2_session *session,
         ctx->path.shrink_to_fit(); //alloc and then dealloc, a wonder
     }
 
-    
+
 }
+
+
