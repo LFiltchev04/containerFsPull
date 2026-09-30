@@ -1,0 +1,3 @@
+struct socketCtx{
+    int outgoingFd;
+};
