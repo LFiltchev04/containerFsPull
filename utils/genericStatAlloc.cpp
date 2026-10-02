@@ -12,21 +12,21 @@ staticAllocatedPool<T>::staticAllocatedPool(int maxSize) {
 }
 
 template <typename T>
-void staticAllocatedPool<T>::get(T* destination) {
+T* staticAllocatedPool<T>::get() {
     std::lock_guard<std::mutex> lock(poolLock);
 
     if(poolRef.empty()){
-        destination = nullptr;
-        return;
+        return nullptr;
     }
-    destination = poolRef.top();
+    T* destination = poolRef.top();
     poolRef.pop();
+    return destination;
 }
 
 template <typename T>
 void staticAllocatedPool<T>::yield(T* item) {
     //dont need to lock that, its a static pool range, it wont change
-    if((item >= &pool[maxSize]) or (item < &pool)){
+    if((item >= &pool[maxSize]) || (item < &pool)){
         printf("Invalid item passed to yield, ignoring\n");
         return;
     }

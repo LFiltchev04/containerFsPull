@@ -14,7 +14,7 @@ class staticAllocatedPool{
     public:
     staticAllocatedPool(int maxSize);
 
-    void get(T*);
+    T* get();
     void yield(T* item);
 
 };

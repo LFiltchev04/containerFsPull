@@ -4,8 +4,9 @@
 #include <nghttp2/nghttp2.h>
 
 #include "reqLifecycleCtx.hpp"
-
+#include "../../utils/uringHandler.hpp"
 int chunkLimit = 16384;
+
 
 ssize_t dataReadCb(nghttp2_session *session, 
     int32_t stream_id,
@@ -24,7 +25,7 @@ ssize_t dataReadCb(nghttp2_session *session,
     stat(ctx->path.c_str(), &st);
 
     if(st.st_size < chunkLimit){
-        
+        resumeCtxPool->get();        
     }
     
 }
