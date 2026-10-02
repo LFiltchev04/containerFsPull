@@ -24,8 +24,24 @@ ssize_t dataReadCb(nghttp2_session *session,
     struct stat st;
     stat(ctx->path.c_str(), &st);
 
-    if(st.st_size < chunkLimit){
-        resumeCtxPool->get();        
+    uint32_t fileOfsetTrack = 0u;
+    while(fileOfsetTrack < st.st_size){
+        if(st.st_size < chunkLimit){
+            auto *ctx = resumeCtxPool->get();        
+            
+            ctx->targetWrite = st.st_size;
+            ctx->offsetTrack = fileOfsetTrack;
+            
+            fileOfsetTrack += ctx->targetWrite;
+        }else{
+            auto *ctx = resumeCtxPool->get();        
+            
+            ctx->targetWrite = chunkLimit;
+            ctx->offsetTrack = fileOfsetTrack;
+            
+            fileOfsetTrack += ctx->targetWrite;
+        }
+
     }
     
 }
