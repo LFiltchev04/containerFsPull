@@ -2,6 +2,7 @@
 
 #include <nghttp2/nghttp2.h>
 
+#include "datasourceCallback.hpp"
 
 #define MAKE_NV(NAME, VALUE) \
     { (uint8_t *)(NAME), (uint8_t *)(VALUE), sizeof(NAME) - 1, sizeof(VALUE) - 1, NGHTTP2_NV_FLAG_NONE }
@@ -18,6 +19,8 @@ int onFrameRecv(nghttp2_session *session, const nghttp2_frame *frame, void *user
     }
 
     nghttp2_data_provider provider;
+    
+    provider.read_callback = dataReadCb;
     
 
     return 0;
