@@ -15,18 +15,13 @@ int sendDataCb(nghttp2_session *session,
         auto* tmp = nghttp2_session_get_stream_user_data(session, frame->hd.stream_id);
         reqLifecycleCtx* ctx = (reqLifecycleCtx*)tmp;
 
-        if(ctx == nullptr || ctx->nextFrameCtx >= ctx->uringCtxs.size()){
+        if(ctx == nullptr){
             return NGHTTP2_ERR_TEMPORAL_CALLBACK_FAILURE;
         }
 
-        // nghttp2 emits one DATA frame per chunk, in order
-        resumeCtx* wrtCtx = ctx->uringCtxs[ctx->nextFrameCtx];
-        if(length != wrtCtx->targetWrite){
-            return NGHTTP2_ERR_TEMPORAL_CALLBACK_FAILURE;
-        }
+        // nghttp2 emits one DATA frame per chunk, in order, subheads are added because uring can reorder them
+        
 
-        memcpy(wrtCtx->frameHeader, framehd, sizeof(wrtCtx->frameHeader));
-        ctx->nextFrameCtx++;
 
         return 0;
     }

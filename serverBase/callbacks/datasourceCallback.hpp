@@ -46,5 +46,11 @@ ssize_t dataReadCb(nghttp2_session *session,
         fileOfsetTrack += ctxW->targetWrite;
     }
 
-    return fileOfsetTrack;
+    ctx->fileOffset = fileOfsetTrack;
+
+    if(fileOfsetTrack == st.st_size){
+        *data_flags |= NGHTTP2_DATA_FLAG_EOF;
     }
+
+    return fileOfsetTrack;
+}
