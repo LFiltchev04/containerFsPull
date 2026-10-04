@@ -2,16 +2,21 @@
 #include <stack>
 #include <cstring>
 #include <cstdint>
+#include <sys/uio.h>
+#include <mutex>
 
 #include "genericStatAlloc.hpp"
+#include "subheaderStruct.hpp"
 io_uring ring;
 
 struct resumeCtx{
+    std::mutex mtx;
+
     int *fd;
     uint32_t offsetTrack;
     uint32_t targetWrite;
     int pipes[2];
-    uint8_t frameHeader[9]; // serialized HTTP/2 frame header
+    uint8_t frameHeader[9]; // serialized htttp2 frame header
 
 
     resumeCtx(){
@@ -40,23 +45,35 @@ void setupUring(){
 }
 
 
-void prepUring(resumeCtx* ctx){
+void prepUring(resumeCtx* ctxW){
 
     if(ring.flags == IORING_SQ_NEED_WAKEUP){
         io_uring_enter(ring.ring_fd, 0, 0, IORING_ENTER_SQ_WAKEUP, nullptr);
     }
 
+    subheader sh;
+    sh.length = ctxW->targetWrite;
+    sh.offset = ctxW->offsetTrack;
+
+    iovec iov[2] = {
+        {&sh, sizeof(sh)},
+        {ctxW->frameHeader, sizeof(ctxW->frameHeader)}
+    };
+
+    io_uring_sqe *sqeH = io_uring_get_sqe(&ring);
+    io_uring_prep_writev(sqeH, *ctxW->fd, iov, 2, ctxW->offsetTrack);
+    sqeH->user_data = (unsigned long)ctxW;
+
     //file-to-pipe
     io_uring_sqe *sqeD = io_uring_get_sqe(&ring);
-    io_uring_prep_splice(sqeD, ctx->pipes[0], ctx->offsetTrack, ctx->pipes[1], ctx->offsetTrack, ctx->targetWrite, SPLICE_F_MORE);
+    io_uring_prep_splice(sqeD, ctxW->pipes[0], ctxW->offsetTrack, ctxW->pipes[1], ctxW->offsetTrack, ctxW->targetWrite, SPLICE_F_MORE);
     sqeD->flags = IOSQE_IO_LINK;
-    sqeD->user_data = (unsigned long)ctx;
+    sqeD->user_data = (unsigned long)ctxW;
 
     //pipe to socket
     io_uring_sqe *sqeN = io_uring_get_sqe(&ring);
-    io_uring_prep_splice(sqeN, ctx->pipes[1], ctx->offsetTrack, *ctx->fd, ctx->offsetTrack, ctx->targetWrite, SPLICE_F_MORE);
-    sqeN->user_data = (unsigned long)ctx;
+    io_uring_prep_splice(sqeN, ctxW->pipes[1], ctxW->offsetTrack, *ctxW->fd, ctxW->offsetTrack, ctxW->targetWrite, SPLICE_F_MORE);
+    sqeN->user_data = (unsigned long)ctxW;
 
     io_uring_submit(&ring);
 }
-

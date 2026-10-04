@@ -4,6 +4,7 @@
 
 #include "reqLifecycleCtx.hpp"
 #include "../../utils/uringHandler.hpp"
+#include "sockCtx.hpp"
 
 int sendDataCb(nghttp2_session *session,
     nghttp2_frame *frame, 
@@ -19,9 +20,15 @@ int sendDataCb(nghttp2_session *session,
             return NGHTTP2_ERR_TEMPORAL_CALLBACK_FAILURE;
         }
 
-        // nghttp2 emits one DATA frame per chunk, in order, subheads are added because uring can reorder them
+        if(sizeof(ctx->write->frameHeader) != length){
+            throw std::runtime_error("frame header size mismatch to buffer");
+        }
         
+        // nghttp2 emits one DATA frame per chunk, in order, subheads are added because uring can reorder them
+        memcpy((void*)framehd, ctx->write->frameHeader, sizeof(ctx->write->frameHeader));
+        prepUring(ctx->write);
 
+        
 
         return 0;
     }
