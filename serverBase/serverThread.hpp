@@ -39,6 +39,12 @@ void serverWorker(int controlPipe){
         return;
     }
 
+    nghttp2_settings_entry entr;
+            entr.settings_id = NGHTTP2_SETTINGS_MAX_CONCURRENT_STREAMS;
+            entr.value = 100;
+            entr.settings_id = NGHTTP2_SETTINGS_INITIAL_WINDOW_SIZE;
+            entr.value = 65535;
+
     printf("serverWorker started on pipe: %d\n", controlPipe);
     epoll_event event{};
     event.events = EPOLLIN;
@@ -84,6 +90,8 @@ void serverWorker(int controlPipe){
             nghttp2_session* session;
             nghttp2_session_server_new(&session, callbacks, clientCtx);
 
+            
+            nghttp2_submit_settings(session, NGHTTP2_FLAG_NONE, &entr, 2);
     
             
 
@@ -112,8 +120,6 @@ void serverWorker(int controlPipe){
             ssize_t received = nghttp2_session_mem_recv(sCtx->session, staticBuffer, static_cast<size_t>(bytesRead));
             printf("nghttp2_session_mem_recv returned: %zd\n", received);
 
-            ssize_t sent = nghttp2_session_send(sCtx->session);
-            printf("nghttp2_session_send returned: %zd\n", sent);
         }
     }
 

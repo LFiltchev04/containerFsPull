@@ -22,6 +22,13 @@ void serverListener(int port){
     listenAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     listenAddr.sin_port = htons(static_cast<uint16_t>(port));
 
+    const int reuseAddress = 1;
+    if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &reuseAddress, sizeof(reuseAddress)) == -1) {
+        std::perror("setsockopt");
+        close(listener);
+        return;
+    }
+
     if (bind(listener, reinterpret_cast<sockaddr*>(&listenAddr), sizeof(listenAddr)) == -1) {
         printf("bind failed");
         close(listener);
@@ -49,6 +56,5 @@ void serverListener(int port){
 
     }
 }
-
 
 

@@ -22,7 +22,7 @@ int onHeaderRecvCb(nghttp2_session *session,
         //-----!kills the entire stream
     }
 
-    printf("header name: %.*s, header value: %.*s\n", (int)namelen, name, (int)valuelen, value);
+    printf(" header name: %.*s, header value: %.*s\n", (int)namelen, name, (int)valuelen, value);
     void* usrData = nghttp2_session_get_stream_user_data(session, frame->hd.stream_id);
     if(usrData == nullptr){
         usrData = new reqLifecycleCtx{};
