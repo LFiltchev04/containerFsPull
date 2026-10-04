@@ -29,7 +29,7 @@ ssize_t dataReadCb(nghttp2_session *session,
     //how latency mindful
     struct stat st;
     stat(ctx->path.c_str(), &st);
-
+        printf("File size: %ld\n", st.st_size);
     
     uint32_t fileOfsetTrack = ctx->fileOffset;
     if(st.st_size < chunkLimit){

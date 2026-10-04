@@ -13,6 +13,7 @@
 #include "sockCtx.hpp"
 #include "callbacks/headerRecv.hpp"
 #include "callbacks/dataSourceSetup.hpp"
+#include "callbacks/sendDataCb.hpp"
 
 struct sessionCtx{
     socketCtx* client;
@@ -75,6 +76,7 @@ void serverWorker(int controlPipe){
 
             nghttp2_session_callbacks_set_on_header_callback(callbacks, onHeaderRecvCb);
             nghttp2_session_callbacks_set_on_frame_recv_callback(callbacks, onFrameRecv);
+            nghttp2_session_callbacks_set_send_data_callback(callbacks, sendDataCb);
 
             nghttp2_session* session;
             nghttp2_session_server_new(&session, callbacks, clientCtx);

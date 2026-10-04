@@ -22,6 +22,7 @@ int onHeaderRecvCb(nghttp2_session *session,
         //-----!kills the entire stream
     }
 
+    printf("header name: %.*s, header value: %.*s\n", (int)namelen, name, (int)valuelen, value);
     void* usrData = nghttp2_session_get_stream_user_data(session, frame->hd.stream_id);
     if(usrData == nullptr){
         usrData = new reqLifecycleCtx{};
@@ -29,7 +30,7 @@ int onHeaderRecvCb(nghttp2_session *session,
     }
 
     reqLifecycleCtx* ctx = static_cast<reqLifecycleCtx*>(usrData);
-    if(headerName == "pathT"){
+    if(headerName == ":path"){
         ctx->path = headerValue.data();
         ctx->path.shrink_to_fit(); //alloc and then dealloc, a wonder
     }

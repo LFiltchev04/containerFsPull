@@ -5,7 +5,7 @@
 
 #include "reqLifecycleCtx.hpp"
 #include "../../utils/uringHandler.hpp"
-#include "sockCtx.hpp"
+#include "../sockCtx.hpp"
 
 int sendDataCb(nghttp2_session *session,
     nghttp2_frame *frame, 
@@ -13,6 +13,14 @@ int sendDataCb(nghttp2_session *session,
     size_t length, 
     nghttp2_data_source *source, 
     void *user_data){
+
+        if(frame->hd.type != NGHTTP2_DATA){
+            //just the OK, sync writer
+
+            printf("Non-DATA frame encountered\n");
+        }
+
+        printf("Processing DATA frame\n");
 
         auto* tmp = nghttp2_session_get_stream_user_data(session, frame->hd.stream_id);
         reqLifecycleCtx* ctx = (reqLifecycleCtx*)tmp;
