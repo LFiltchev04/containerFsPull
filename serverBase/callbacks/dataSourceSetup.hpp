@@ -23,7 +23,6 @@ int onFrameRecv(nghttp2_session *session, const nghttp2_frame *frame, void *user
     provider.read_callback = dataReadCb;
     
     printf("Submitting response for stream_id=%d\n", frame->hd.stream_id);
-    nghttp2_submit_response(session, frame->hd.stream_id, hdrs, sizeof(hdrs) / sizeof(hdrs[0]), &provider);
 
     return 0;
 }

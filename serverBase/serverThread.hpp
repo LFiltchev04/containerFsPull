@@ -14,6 +14,8 @@
 #include "callbacks/headerRecv.hpp"
 #include "callbacks/dataSourceSetup.hpp"
 #include "callbacks/sendDataCb.hpp"
+#include "callbacks/sendNormalCb.hpp"
+
 
 struct sessionCtx{
     socketCtx* client;
@@ -77,6 +79,7 @@ void serverWorker(int controlPipe){
             nghttp2_session_callbacks_set_on_header_callback(callbacks, onHeaderRecvCb);
             nghttp2_session_callbacks_set_on_frame_recv_callback(callbacks, onFrameRecv);
             nghttp2_session_callbacks_set_send_data_callback(callbacks, sendDataCb);
+            nghttp2_session_callbacks_set_send_callback(callbacks, sendNormalCb);
 
             nghttp2_session* session;
             nghttp2_session_server_new(&session, callbacks, clientCtx);
@@ -107,10 +110,10 @@ void serverWorker(int controlPipe){
             }
 
             ssize_t received = nghttp2_session_mem_recv(sCtx->session, staticBuffer, static_cast<size_t>(bytesRead));
-            if (received < 0) {
-                printf("nghttp2_session_mem_recv: %s\n", nghttp2_strerror(static_cast<int>(received)));
-                destroySessionContext(epollFd, sCtx);
-            }
+            printf("nghttp2_session_mem_recv returned: %zd\n", received);
+
+            ssize_t sent = nghttp2_session_send(sCtx->session);
+            printf("nghttp2_session_send returned: %zd\n", sent);
         }
     }
 
