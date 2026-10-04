@@ -1,10 +1,12 @@
+#pragma once
+
 #include <string_view>
 
 #include <nghttp2/nghttp2.h>
 
 #include "reqLifecycleCtx.hpp"
 
-void onHeaderRecvCb(nghttp2_session *session,
+int onHeaderRecvCb(nghttp2_session *session,
     const nghttp2_frame *frame, 
     const uint8_t *name, 
     size_t namelen, 
@@ -32,7 +34,7 @@ void onHeaderRecvCb(nghttp2_session *session,
         ctx->path.shrink_to_fit(); //alloc and then dealloc, a wonder
     }
 
-
+    return 0;
 }
 
 

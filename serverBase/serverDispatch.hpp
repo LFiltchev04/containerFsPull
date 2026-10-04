@@ -39,6 +39,7 @@ void serverListener(int port){
         printf("accepted client fd: %d\n", clientFd);
         if(clientFd != -1) {
             socketCtx *clientCtx = new socketCtx{clientFd};
+            clientCtx->outgoingFd = clientFd;
 
             int targetWorker = clientFd % numWorkers;
             printf("Sending clientCtx to worker: %d\n", targetWorker);

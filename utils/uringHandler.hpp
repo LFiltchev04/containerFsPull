@@ -1,3 +1,5 @@
+#pragma once
+
 #include <liburing.h>
 #include <stack>
 #include <cstring>
@@ -32,7 +34,7 @@ struct resumeCtx{
 
 
 //thread safe entry for submissions
-staticAllocatedPool<resumeCtx>* resumeCtxPool;
+extern staticAllocatedPool<resumeCtx>* resumeCtxPool;
 void setupUring(){
     struct io_uring_params params = {0};
     params.flags = IORING_SETUP_SQPOLL;

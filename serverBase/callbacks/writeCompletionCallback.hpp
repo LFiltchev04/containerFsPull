@@ -1,3 +1,4 @@
+#pragma once
 #include <liburing.h>
 #include <mutex>
 #include "../../utils/uringHandler.hpp"

@@ -2,6 +2,7 @@
 
 #include "serverDispatch.hpp"
 #include "serverThread.hpp"
+#include "../utils/uringHandler.hpp"
 
 void runApp(){
 	printf("trying to run\n");
@@ -16,7 +17,7 @@ void runApp(){
 		serverThread.detach();
 	}
 
-	
+	setupUring();
 
 	serverListener(8080);
 

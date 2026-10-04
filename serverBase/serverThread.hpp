@@ -1,78 +1,116 @@
+#pragma once
+
 #include <arpa/inet.h>
+#include <cerrno>
 #include <cstdint>
 #include <cstdio>
 #include <sys/socket.h>
 #include <sys/epoll.h>
 #include <unistd.h>
-#include <vector>
 
 #include <nghttp2/nghttp2.h>
 
 #include "sockCtx.hpp"
+#include "callbacks/headerRecv.hpp"
+#include "callbacks/dataSourceSetup.hpp"
 
 struct sessionCtx{
-    epoll_event* event;
+    socketCtx* client;
     nghttp2_session* session;
 };
 
+inline void destroySessionContext(int epollFd, sessionCtx* sCtx){
+    epoll_ctl(epollFd, EPOLL_CTL_DEL, sCtx->client->outgoingFd, nullptr);
+    close(sCtx->client->outgoingFd);
+
+    nghttp2_session_del(sCtx->session);
+
+    delete sCtx->client;
+    delete sCtx;
+}
+
 void serverWorker(int controlPipe){
     int epollFd = epoll_create1(0);
-    
+    if (epollFd == -1) {
+        std::perror("epoll_create1");
+        return;
+    }
 
     printf("serverWorker started on pipe: %d\n", controlPipe);
     epoll_event event{};
     event.events = EPOLLIN;
-    event.data.fd = controlPipe;
-    
-    epoll_ctl(epollFd, EPOLL_CTL_ADD, controlPipe, &event);
-    
+    event.data.ptr = nullptr;
+    if (epoll_ctl(epollFd, EPOLL_CTL_ADD, controlPipe, &event) == -1) {
+        std::perror("epoll_ctl control pipe");
+        close(epollFd);
+        return;
+    }
+
     epoll_event events[1];
     uint8_t staticBuffer[16384];
 
-    std::vector<epoll_event*> eventContainer;
     while (true) {
-        printf("waiting for epoll events\n");
+        printf("waiting for epoll events on pipe: %d\n", controlPipe);
         int n = epoll_wait(epollFd, events, 1, -1);
-
-        if (events[0].data.fd == controlPipe) {
-            int bytesRead = read(controlPipe, &staticBuffer, sizeof(socketCtx));
-            printf("Read %d bytes from control pipe\n", bytesRead);
-            if(bytesRead >= 0){
-                printf("Control pipe read failed\n");
-
-                socketCtx *ctrxDeref = *reinterpret_cast<socketCtx**>(staticBuffer);
-                
-                sessionCtx* sCtx = new sessionCtx;
-                epoll_event ev;
-                ev.data.ptr = ctrxDeref;
-                ev.events = EPOLLIN;
-                epoll_ctl(epollFd, EPOLL_CTL_ADD, ctrxDeref->outgoingFd, &ev);    
-                
-                socketCtx *clientCtx =static_cast<socketCtx*>(events[0].data.ptr);
-        
-                nghttp2_session* session;
-                nghttp2_session_callbacks *callbacks;
-                nghttp2_session_callbacks_new(&callbacks);
-                nghttp2_session_server_new(&session, callbacks, clientCtx);
-
-                sCtx->event = &ev;
-                sCtx->session = session;
-                eventContainer.push_back(&ev);
+        if (n == -1) {
+            if (errno == EINTR) {
+                continue;
             }
-            
+            std::perror("epoll_wait");
+            break;
         }
 
-        if (events[0].data.fd != controlPipe) {
+        if (events[0].data.ptr == nullptr) {
+            socketCtx* clientCtx = nullptr;
+            ssize_t bytesRead = read(controlPipe, &clientCtx, sizeof(clientCtx));
+            printf("Read %zd bytes from control pipe\n", bytesRead);
             
+            if (bytesRead != sizeof(clientCtx) or clientCtx == nullptr) {
+                printf("Invalid client context read from control pipe\n");
+                continue;
+            }
+
+            nghttp2_session_callbacks* callbacks = nullptr;
+            nghttp2_session_callbacks_new(&callbacks);
+
+            nghttp2_session_callbacks_set_on_header_callback(callbacks, onHeaderRecvCb);
+            nghttp2_session_callbacks_set_on_frame_recv_callback(callbacks, onFrameRecv);
+
+            nghttp2_session* session;
+            nghttp2_session_server_new(&session, callbacks, clientCtx);
+
+    
+            
+
+            sessionCtx* sCtx = new sessionCtx{clientCtx, session};
+            epoll_event clientEvent{};
+            clientEvent.events = EPOLLIN;
+            clientEvent.data.ptr = sCtx;
+            if (epoll_ctl(epollFd, EPOLL_CTL_ADD, clientCtx->outgoingFd, &clientEvent) == -1) {
+                std::perror("epoll_ctl client socket");
+                nghttp2_session_del(session);
+                close(clientCtx->outgoingFd);
+                delete clientCtx;
+                delete sCtx;
+            }
+        } else {
             printf("from external socket\n");
-            epoll_event* ev = static_cast<epoll_event*>(events[0].data.ptr);
-            sessionCtx* sCtx = static_cast<sessionCtx*>(ev->data.ptr);
+            sessionCtx* sCtx = static_cast<sessionCtx*>(events[0].data.ptr);
 
-            nghttp2_session_mem_recv(sCtx->session, static_cast<uint8_t*>(staticBuffer), sizeof(staticBuffer));
+            ssize_t bytesRead = read(sCtx->client->outgoingFd, staticBuffer, sizeof(staticBuffer));
+            if (bytesRead == 0) {
+                printf("Client closed the connection\n");
+                destroySessionContext(epollFd, sCtx);
+                continue;
+            }
+
+            ssize_t received = nghttp2_session_mem_recv(sCtx->session, staticBuffer, static_cast<size_t>(bytesRead));
+            if (received < 0) {
+                printf("nghttp2_session_mem_recv: %s\n", nghttp2_strerror(static_cast<int>(received)));
+                destroySessionContext(epollFd, sCtx);
+            }
         }
-
     }
+
 }
-
-
 
