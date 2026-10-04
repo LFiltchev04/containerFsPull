@@ -17,8 +17,9 @@ struct sessionCtx{
 
 void serverWorker(int controlPipe){
     int epollFd = epoll_create1(0);
+    
 
-    printf("serverWorker started\n");
+    printf("serverWorker started on pipe: %d\n", controlPipe);
     epoll_event event{};
     event.events = EPOLLIN;
     event.data.fd = controlPipe;
@@ -36,7 +37,7 @@ void serverWorker(int controlPipe){
         if (events[0].data.fd == controlPipe) {
             int bytesRead = read(controlPipe, &staticBuffer, sizeof(socketCtx));
             printf("Read %d bytes from control pipe\n", bytesRead);
-            if(bytesRead <= 0){
+            if(bytesRead >= 0){
                 printf("Control pipe read failed\n");
 
                 socketCtx *ctrxDeref = *reinterpret_cast<socketCtx**>(staticBuffer);

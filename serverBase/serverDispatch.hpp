@@ -41,6 +41,7 @@ void serverListener(int port){
             socketCtx *clientCtx = new socketCtx{clientFd};
 
             int targetWorker = clientFd % numWorkers;
+            printf("Sending clientCtx to worker: %d\n", targetWorker);
             int res = write(pipePool[targetWorker][1], &clientCtx, sizeof(socketCtx*));
             printf("write result: %d\n", res);
         }
