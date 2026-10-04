@@ -1,11 +1,14 @@
 #include <liburing.h>
 #include <sys/stat.h>
+#include <vector>
 
 #include <nghttp2/nghttp2.h>
 
 #include "reqLifecycleCtx.hpp"
 #include "../../utils/uringHandler.hpp"
 int chunkLimit = 16384;
+
+
 
 
 ssize_t dataReadCb(nghttp2_session *session, 
@@ -24,24 +27,24 @@ ssize_t dataReadCb(nghttp2_session *session,
     struct stat st;
     stat(ctx->path.c_str(), &st);
 
-    uint32_t fileOfsetTrack = 0u;
-    while(fileOfsetTrack < st.st_size){
-        if(st.st_size < chunkLimit){
-            auto *ctx = resumeCtxPool->get();        
-            
-            ctx->targetWrite = st.st_size;
-            ctx->offsetTrack = fileOfsetTrack;
-            
-            fileOfsetTrack += ctx->targetWrite;
-        }else{
-            auto *ctx = resumeCtxPool->get();        
-            
-            ctx->targetWrite = chunkLimit;
-            ctx->offsetTrack = fileOfsetTrack;
-            
-            fileOfsetTrack += ctx->targetWrite;
-        }
-
-    }
     
-}
+    uint32_t fileOfsetTrack = ctx->fileOffset;
+    if(st.st_size < chunkLimit){
+        auto *ctxW = resumeCtxPool->get();        
+
+        ctxW->targetWrite = st.st_size;
+        ctxW->offsetTrack = fileOfsetTrack;
+            
+        fileOfsetTrack += ctxW->targetWrite;
+
+    }else{
+        auto *ctxW = resumeCtxPool->get();        
+
+        ctxW->targetWrite = chunkLimit;
+        ctxW->offsetTrack = fileOfsetTrack;
+            
+        fileOfsetTrack += ctxW->targetWrite;
+    }
+
+    return fileOfsetTrack;
+    }
