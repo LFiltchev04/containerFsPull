@@ -36,11 +36,13 @@ void serverListener(int port){
 
     while (true) {
         int clientFd = accept(listener, nullptr, nullptr);
+        printf("accepted client fd: %d\n", clientFd);
         if(clientFd != -1) {
             socketCtx *clientCtx = new socketCtx{clientFd};
 
             int targetWorker = clientFd % numWorkers;
-            write(pipePool[targetWorker][1], &clientCtx, sizeof(socketCtx*));
+            int res = write(pipePool[targetWorker][1], &clientCtx, sizeof(socketCtx*));
+            printf("write result: %d\n", res);
         }
 
     }

@@ -12,7 +12,7 @@ void onHeaderRecvCb(nghttp2_session *session,
     size_t valuelen, 
     uint8_t flags, void *user_data){
 
-    
+    printf("header gotten");
     std::string_view headerName(reinterpret_cast<const char*>(name), namelen);
     std::string_view headerValue(reinterpret_cast<const char*>(value), valuelen);
 
@@ -27,7 +27,7 @@ void onHeaderRecvCb(nghttp2_session *session,
     }
 
     reqLifecycleCtx* ctx = static_cast<reqLifecycleCtx*>(usrData);
-    if(headerName == "path"){
+    if(headerName == "pathT"){
         ctx->path = headerValue.data();
         ctx->path.shrink_to_fit(); //alloc and then dealloc, a wonder
     }

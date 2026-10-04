@@ -18,6 +18,7 @@ struct sessionCtx{
 void serverWorker(int controlPipe){
     int epollFd = epoll_create1(0);
 
+    printf("serverWorker started\n");
     epoll_event event{};
     event.events = EPOLLIN;
     event.data.fd = controlPipe;
@@ -29,11 +30,12 @@ void serverWorker(int controlPipe){
 
     std::vector<epoll_event*> eventContainer;
     while (true) {
+        printf("waiting for epoll events\n");
         int n = epoll_wait(epollFd, events, 1, -1);
 
         if (events[0].data.fd == controlPipe) {
             int bytesRead = read(controlPipe, &staticBuffer, sizeof(socketCtx));
-            
+            printf("Read %d bytes from control pipe\n", bytesRead);
             if(bytesRead <= 0){
                 printf("Control pipe read failed\n");
 
@@ -61,6 +63,7 @@ void serverWorker(int controlPipe){
 
         if (events[0].data.fd != controlPipe) {
             
+            printf("from external socket\n");
             epoll_event* ev = static_cast<epoll_event*>(events[0].data.ptr);
             sessionCtx* sCtx = static_cast<sessionCtx*>(ev->data.ptr);
 
