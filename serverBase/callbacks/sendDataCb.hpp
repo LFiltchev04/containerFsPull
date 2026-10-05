@@ -15,8 +15,8 @@ int sendDataCb(nghttp2_session *session,
     void *user_data){
 
         if(frame->hd.type != NGHTTP2_DATA){
-            //just the OK, sync writer
-
+            //in all honesty dont expect this to happen
+            
             printf("Non-DATA frame encountered\n");
         }
 

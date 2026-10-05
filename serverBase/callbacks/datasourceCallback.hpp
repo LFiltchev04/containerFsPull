@@ -41,6 +41,7 @@ ssize_t dataReadCb(nghttp2_session *session,
 
         ctxW->targetWrite = st.st_size;
         ctxW->offsetTrack = fileOfsetTrack;
+        ctxW->fileFd = ctx->openFd;
         ctx->write = (resumeCtx*)ctxW;
 
         fileOfsetTrack += ctxW->targetWrite;
@@ -50,6 +51,7 @@ ssize_t dataReadCb(nghttp2_session *session,
 
         ctxW->targetWrite = chunkLimit;
         ctxW->offsetTrack = fileOfsetTrack;
+        ctxW->fileFd = ctx->openFd;
         ctx->write = (resumeCtx*)ctxW;
 
         fileOfsetTrack += ctxW->targetWrite;

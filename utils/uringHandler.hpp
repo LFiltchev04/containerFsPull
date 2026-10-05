@@ -23,7 +23,7 @@ enum writeState{
 
 
 struct resumeCtx{
-    static int devNullFd;
+    inline static int devNullFd;
     std::mutex mtx;
 
     int *fd;  
