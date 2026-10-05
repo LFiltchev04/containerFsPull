@@ -33,6 +33,9 @@ ssize_t dataReadCb(nghttp2_session *session,
     printf("File size: %ld\n", st.st_size);
     
     uint32_t fileOfsetTrack = ctx->fileOffset;
+    
+    
+
     if(st.st_size < chunkLimit){
         auto *ctxW = resumeCtxPool->get();        
 
