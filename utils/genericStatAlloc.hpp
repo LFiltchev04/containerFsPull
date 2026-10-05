@@ -6,6 +6,8 @@
 #include <cstdio>
 #include <memory>
 
+
+//requires that T implement the reset method
 template <typename T>
 class staticAllocatedPool{
     std::mutex poolLock;
@@ -36,6 +38,8 @@ class staticAllocatedPool{
             return;
         }
         std::lock_guard<std::mutex> lock(poolLock);
+
+        item->reset();
         poolRef.push(item);
     }
 };

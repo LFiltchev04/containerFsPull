@@ -29,7 +29,7 @@ int sendDataCb(nghttp2_session *session,
             return NGHTTP2_ERR_TEMPORAL_CALLBACK_FAILURE;
         }
 
-        if(sizeof(ctx->write->frameHeader) != length){
+        if(sizeof(ctx->write->frameHeader) > length){
             throw std::runtime_error("frame header size mismatch to buffer");
         }
         

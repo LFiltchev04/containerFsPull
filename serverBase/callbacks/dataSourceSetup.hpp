@@ -23,15 +23,15 @@ int onFrameRecv(nghttp2_session *session, const nghttp2_frame *frame, void *user
             hdrs[1] = MAKE_NV("content-type", "application/octet-stream");
         }
 
+        
 
-
-        //nghttp2_data_provider provider;
-        //provider.read_callback = dataReadCb;
+        nghttp2_data_provider provider;
+        provider.read_callback = dataReadCb;
     
         printf("Submitting response for stream_id=%d\n", frame->hd.stream_id);
 
         if(frame->hd.stream_id % 2 != 0){
-            int res = nghttp2_submit_response(session, frame->hd.stream_id, hdrs, 2, nullptr);
+            int res = nghttp2_submit_response(session, frame->hd.stream_id, hdrs, 2, &provider);
             printf("nghttp2_submit_response returned: %d\n", res);
             nghttp2_session_send(session);
         
