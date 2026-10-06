@@ -8,7 +8,12 @@
 
 void cqeFinish(struct io_uring_cqe* cqe){
 
-   
+       printf("writeCOmpletionCallback? \n");
+
+    if(!cqe){
+        return;
+    }
+
     resumeCtx* ctxW = (resumeCtx*)cqe->user_data;
     std::lock_guard<std::mutex> lock(ctxW->mtx);
     if(cqe->res < 0){
@@ -36,6 +41,5 @@ void cqeFinish(struct io_uring_cqe* cqe){
         //wire in nghttp2 streamID dump, if you dont clear them out you hit max connections, they dont resolve alone, maybe send a termination
         //so the client clears out any stream scoped ctx it had
     }
-    
     
 }

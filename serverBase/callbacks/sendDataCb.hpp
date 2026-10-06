@@ -38,7 +38,6 @@ int sendDataCb(nghttp2_session *session,
         ctx->write->networkFd = static_cast<socketCtx*>(user_data)->outgoingFd;
         prepUring(ctx->write);
 
-        
 
         return 0;
     }

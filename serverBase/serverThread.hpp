@@ -7,7 +7,7 @@
 #include <sys/socket.h>
 #include <sys/epoll.h>
 #include <unistd.h>
-
+#include <sys/eventfd.h>
 #include <nghttp2/nghttp2.h>
 
 #include "sockCtx.hpp"
@@ -15,6 +15,7 @@
 #include "callbacks/dataSourceSetup.hpp"
 #include "callbacks/sendDataCb.hpp"
 #include "callbacks/sendNormalCb.hpp"
+#include "callbacks/writeCompletionCallback.hpp"
 
 
 struct sessionCtx{
@@ -33,6 +34,11 @@ inline void destroySessionContext(int epollFd, sessionCtx* sCtx){
 }
 
 void serverWorker(int controlPipe){
+    unsigned head = 0;
+    io_uring_cqe* cqe = nullptr;
+    int evfd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
+    io_uring_register_eventfd(&ring, evfd);
+
     int epollFd = epoll_create1(0);
     if (epollFd == -1) {
         std::perror("epoll_create1");
@@ -49,9 +55,16 @@ void serverWorker(int controlPipe){
     event.events = EPOLLIN;
     event.data.ptr = nullptr;
     if (epoll_ctl(epollFd, EPOLL_CTL_ADD, controlPipe, &event) == -1) {
-        std::perror("epoll_ctl control pipe");
         close(epollFd);
         return;
+    }
+
+    epoll_event ringEvent{};
+    ringEvent.events = EPOLLIN;
+    ringEvent.data.ptr = &ring;
+    if(epoll_ctl(epollFd, EPOLL_CTL_ADD, evfd, &ringEvent) == -1) {
+        close(epollFd);
+        throw std::exception();
     }
 
     epoll_event events[1];
@@ -66,6 +79,17 @@ void serverWorker(int controlPipe){
             }
             std::perror("epoll_wait");
             break;
+        }
+
+
+        if(events[0].data.fd == ring.ring_fd){
+            printf("Uring ring has events to process\n");
+            unsigned count = 0;
+            io_uring_for_each_cqe(&ring, head, cqe) {
+                cqeFinish(cqe);
+                count++;
+            }
+            printf("Processed %u uring events\n", count);
         }
 
         if (events[0].data.ptr == nullptr) {
@@ -117,8 +141,12 @@ void serverWorker(int controlPipe){
             ssize_t received = nghttp2_session_mem_recv(sCtx->session, staticBuffer, static_cast<size_t>(bytesRead));
             printf("nghttp2_session_mem_recv returned: %zd", received);
             printf(" code being: %s\n", nghttp2_strerror(received));
+            cqeFinish(cqe); //for inline completions 
 
         }
+
+
+        
     }
 
 }

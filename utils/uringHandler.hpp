@@ -83,6 +83,7 @@ void setupUring(){
 
 //idempotent function for resubmission of uring events, context knows how to recover each short-state
 void prepUring(resumeCtx* ctxW){
+
     std::lock_guard<std::mutex> lock(ringMtx);
 
     // sofit links work, figured it sbetter to yield the sqe entries early and to make as small of an operation as possible, maybe easier on worker threads to schedule
@@ -104,12 +105,12 @@ void prepUring(resumeCtx* ctxW){
     io_uring_sqe *sqeD = io_uring_get_sqe(&ring);
     io_uring_prep_splice(sqeD, ctxW->fileFd, ctxW->offsetTrack, ctxW->pipes[1], -1, ctxW->targetWrite, 0);
     sqeD->flags = IOSQE_IO_LINK;
-    sqeD->user_data = (unsigned long)ctxW;
+    sqeD->user_data = (unsigned long long)ctxW;
 
     //pipe to socket
     io_uring_sqe *sqeN = io_uring_get_sqe(&ring);
     io_uring_prep_splice(sqeN, ctxW->pipes[0], -1, ctxW->networkFd, -1, ctxW->targetWrite, 0);
-    sqeN->user_data = (unsigned long)ctxW;
+    sqeN->user_data = (unsigned long long)ctxW;
     //there was no need to this? Its the end of the logical chain?
 
     char fdPath[64];
@@ -121,4 +122,6 @@ void prepUring(resumeCtx* ctxW){
     }
     printf("         Submitting uring events for context fd %d and local filename %s\n", ctxW->networkFd, fdLink);
     io_uring_submit(&ring);
+
+    
 }

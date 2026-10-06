@@ -37,6 +37,7 @@ ssize_t dataReadCb(nghttp2_session *session,
     
 
     if(st.st_size < chunkLimit){
+        printf("File size is less than chunk limit, using targetWrite=%ld\n", (long)st.st_size);
         auto *ctxW = resumeCtxPool->get();        
 
         ctxW->targetWrite = st.st_size;
@@ -47,6 +48,7 @@ ssize_t dataReadCb(nghttp2_session *session,
         fileOfsetTrack += ctxW->targetWrite;
 
     }else{
+        printf("File size is greater than or equal to chunk limit, using targetWrite=%d\n", chunkLimit);
         auto *ctxW = resumeCtxPool->get();        
 
         ctxW->targetWrite = chunkLimit;
