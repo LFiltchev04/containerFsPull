@@ -86,6 +86,7 @@ void serverWorker(int controlPipe){
             continue;
         }
 
+        //ugly gate but it works, has to be last
         if (events[0].data.ptr == nullptr) {
             socketCtx* clientCtx = nullptr;
             ssize_t bytesRead = read(controlPipe, &clientCtx, sizeof(clientCtx));

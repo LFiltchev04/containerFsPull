@@ -28,6 +28,7 @@ class staticAllocatedPool{
             return nullptr;
         }
         T* destination = poolRef.top();
+        destination->init();
         poolRef.pop();
         return destination;
     }

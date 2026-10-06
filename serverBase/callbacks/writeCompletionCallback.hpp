@@ -7,6 +7,7 @@
 
 
 void cqeFinish(struct io_uring_cqe* cqe){
+    printf("writeCOmpletionCallback? \n");
 
 
     if(!cqe){
@@ -20,7 +21,6 @@ void cqeFinish(struct io_uring_cqe* cqe){
     }
 
     if(ctxW->stage == PIPE_TO_SOCK){
-        printf("writeCOmpletionCallback? \n");
 
         ctxW->targetWrite -= cqe->res;
         ctxW->offsetTrack += cqe->res;
