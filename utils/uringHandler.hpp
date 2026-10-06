@@ -68,8 +68,6 @@ struct resumeCtx{
             pipes[1] = -1;
         }
 
-        memset(frameHeader, 0, sizeof(frameHeader));
-
     }
 };
 
@@ -116,7 +114,7 @@ void prepUring(resumeCtx* ctxW){
 
     //pipe to socket
     io_uring_sqe *sqeN = io_uring_get_sqe(&ring);
-    io_uring_prep_splice(sqeN, ctxW->pipes[0], ctxW->offsetTrack, ctxW->networkFd, -1, ctxW->targetWrite, 0);
+    io_uring_prep_splice(sqeN, ctxW->pipes[0], -1, ctxW->networkFd, -1, ctxW->targetWrite, 0);
     sqeN->user_data = (unsigned long long)ctxW;
     //there was no need to this? Its the end of the logical chain?
 

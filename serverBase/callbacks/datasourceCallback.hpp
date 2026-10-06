@@ -47,6 +47,9 @@ ssize_t dataReadCb(nghttp2_session *session,
 
         fileOfsetTrack += ctxW->targetWrite;
 
+        *data_flags |= NGHTTP2_DATA_FLAG_NO_COPY | NGHTTP2_DATA_FLAG_EOF;
+        return ctxW->targetWrite;
+
     }else{
         printf("File size is greater than or equal to chunk limit, using targetWrite=%d\n", chunkLimit);
         auto *ctxW = resumeCtxPool->get();        
@@ -55,6 +58,10 @@ ssize_t dataReadCb(nghttp2_session *session,
         ctxW->offsetTrack = fileOfsetTrack;
         ctxW->fileFd = ctx->openFd;
         ctx->write = (resumeCtx*)ctxW;
+
+        //wont work for now
+        *data_flags |= NGHTTP2_DATA_FLAG_NO_COPY | NGHTTP2_DATA_FLAG_EOF;
+        return ctxW->targetWrite;
 
         fileOfsetTrack += ctxW->targetWrite;
     }

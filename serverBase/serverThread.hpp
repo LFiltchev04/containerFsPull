@@ -34,6 +34,7 @@ inline void destroySessionContext(int epollFd, sessionCtx* sCtx){
 }
 
 void serverWorker(int controlPipe){
+    uint8_t eventfdBlackHole;
     unsigned head = 0;
     io_uring_cqe* cqe = nullptr;
     int evfd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
@@ -74,15 +75,16 @@ void serverWorker(int controlPipe){
         printf("waiting for epoll events on pipe: %d\n", controlPipe);
         int n = epoll_wait(epollFd, events, 1, -1);
 
-
+        //completion handler for cqes
         if(events[0].data.fd == evfd){
-            printf("Uring ring has events to process\n");
+            printf("Processing uring events\n");
             unsigned count = 0;
             io_uring_for_each_cqe(&ring, head, cqe) {
+                printf("why arent you running you fucking idiot???????");
                 cqeFinish(cqe);
                 count++;
+                read(evfd, &eventfdBlackHole, sizeof(uint8_t));
             }
-            printf("Processed %u uring events\n", count);
             continue;
         }
 
