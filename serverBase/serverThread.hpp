@@ -61,7 +61,7 @@ void serverWorker(int controlPipe){
 
     epoll_event ringEvent{};
     ringEvent.events = EPOLLIN;
-    ringEvent.data.ptr = &ring;
+    ringEvent.data.fd = evfd;
     if(epoll_ctl(epollFd, EPOLL_CTL_ADD, evfd, &ringEvent) == -1) {
         close(epollFd);
         throw std::exception();
@@ -73,16 +73,9 @@ void serverWorker(int controlPipe){
     while (true) {
         printf("waiting for epoll events on pipe: %d\n", controlPipe);
         int n = epoll_wait(epollFd, events, 1, -1);
-        if (n == -1) {
-            if (errno == EINTR) {
-                continue;
-            }
-            std::perror("epoll_wait");
-            break;
-        }
 
 
-        if(events[0].data.fd == ring.ring_fd){
+        if(events[0].data.fd == evfd){
             printf("Uring ring has events to process\n");
             unsigned count = 0;
             io_uring_for_each_cqe(&ring, head, cqe) {
@@ -90,6 +83,7 @@ void serverWorker(int controlPipe){
                 count++;
             }
             printf("Processed %u uring events\n", count);
+            continue;
         }
 
         if (events[0].data.ptr == nullptr) {
@@ -141,7 +135,6 @@ void serverWorker(int controlPipe){
             ssize_t received = nghttp2_session_mem_recv(sCtx->session, staticBuffer, static_cast<size_t>(bytesRead));
             printf("nghttp2_session_mem_recv returned: %zd", received);
             printf(" code being: %s\n", nghttp2_strerror(received));
-            cqeFinish(cqe); //for inline completions 
 
         }
 

@@ -8,7 +8,6 @@
 
 void cqeFinish(struct io_uring_cqe* cqe){
 
-       printf("writeCOmpletionCallback? \n");
 
     if(!cqe){
         return;
@@ -21,6 +20,8 @@ void cqeFinish(struct io_uring_cqe* cqe){
     }
 
     if(ctxW->stage == PIPE_TO_SOCK){
+        printf("writeCOmpletionCallback? \n");
+
         ctxW->targetWrite -= cqe->res;
         ctxW->offsetTrack += cqe->res;
 
@@ -40,6 +41,8 @@ void cqeFinish(struct io_uring_cqe* cqe){
 
         //wire in nghttp2 streamID dump, if you dont clear them out you hit max connections, they dont resolve alone, maybe send a termination
         //so the client clears out any stream scoped ctx it had
+    }else{
+        printf("epoll errored out, errorL %s\n", strerror(-cqe->res));
     }
     
 }
