@@ -14,6 +14,6 @@ struct reqLifecycleCtx{
 
     resumeCtx* write; //holds a one-off write context to set up the network write call
 
-    int *networkFd = nullptr;
-    int *openFd = nullptr;
+    int networkFd = -1;
+    int openFd = -1;
 };

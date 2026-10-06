@@ -13,7 +13,6 @@ int pipePool[numWorkers][2];
 void serverListener(int port){
     const int listener = socket(AF_INET, SOCK_STREAM, 0);
     if (listener == -1) {
-        std::perror("socket");
         return;
     }
 
@@ -24,7 +23,6 @@ void serverListener(int port){
 
     const int reuseAddress = 1;
     if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &reuseAddress, sizeof(reuseAddress)) == -1) {
-        std::perror("setsockopt");
         close(listener);
         return;
     }
@@ -36,7 +34,6 @@ void serverListener(int port){
     }
 
     if (listen(listener, SOMAXCONN) == -1) {
-        std::perror("listen");
         close(listener);
         return;
     }
@@ -49,9 +46,7 @@ void serverListener(int port){
             clientCtx->outgoingFd = clientFd;
 
             int targetWorker = clientFd % numWorkers;
-            printf("Sending clientCtx to worker: %d\n", targetWorker);
             int res = write(pipePool[targetWorker][1], &clientCtx, sizeof(socketCtx*));
-            printf("write result: %d\n", res);
         }
 
     }

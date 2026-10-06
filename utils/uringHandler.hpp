@@ -26,8 +26,8 @@ struct resumeCtx{
     inline static int devNullFd;
     std::mutex mtx;
 
-    int *networkFd = nullptr;  
-    int *fileFd = nullptr;
+    int networkFd = -1;  
+    int fileFd = -1;
     subheader sh;
     uint8_t subheaderOffset = 0u;
     iovec iov[2];
@@ -39,7 +39,7 @@ struct resumeCtx{
     writeState stage = HEADER;
 
     resumeCtx(){
-        networkFd = nullptr;
+        networkFd = -1;
         offsetTrack = 0;
         targetWrite = 0;
 
@@ -53,8 +53,8 @@ struct resumeCtx{
     }
 
     void reset(){
-        networkFd = nullptr;
-        fileFd = nullptr;
+        networkFd = -1;
+        fileFd = -1;
         offsetTrack = 0;
         targetWrite = 0;
         subheaderOffset = 0u;
@@ -87,13 +87,14 @@ void prepUring(resumeCtx* ctxW){
 
     // sofit links work, figured it sbetter to yield the sqe entries early and to make as small of an operation as possible, maybe easier on worker threads to schedule
     if(ctxW->stage == HEADER){
+        printf("Preparing uring for HEADER stage, context fd %d\n", ctxW->networkFd);
         ctxW->sh.length = ctxW->targetWrite;
         ctxW->sh.offset = ctxW->offsetTrack;
         ctxW->iov[0] = { &ctxW->sh, sizeof(ctxW->sh) };
         ctxW->iov[1] = { ctxW->frameHeader, sizeof(ctxW->frameHeader) };
 
         io_uring_sqe *sqeH = io_uring_get_sqe(&ring);
-        io_uring_prep_writev(sqeH, *ctxW->networkFd, ctxW->iov, 2, ctxW->subheaderOffset);
+        io_uring_prep_writev(sqeH, ctxW->networkFd, ctxW->iov, 2, ctxW->subheaderOffset);
         sqeH->flags = IOSQE_IO_LINK;
 
         sqeH->user_data = (unsigned long)ctxW;
@@ -101,15 +102,23 @@ void prepUring(resumeCtx* ctxW){
 
     //file-to-pipe
     io_uring_sqe *sqeD = io_uring_get_sqe(&ring);
-    io_uring_prep_splice(sqeD, *ctxW->fileFd, ctxW->offsetTrack, ctxW->pipes[1], -1, ctxW->targetWrite, 0);
+    io_uring_prep_splice(sqeD, ctxW->fileFd, ctxW->offsetTrack, ctxW->pipes[1], -1, ctxW->targetWrite, 0);
     sqeD->flags = IOSQE_IO_LINK;
     sqeD->user_data = (unsigned long)ctxW;
 
     //pipe to socket
     io_uring_sqe *sqeN = io_uring_get_sqe(&ring);
-    io_uring_prep_splice(sqeN, ctxW->pipes[0], -1, *ctxW->networkFd, -1, ctxW->targetWrite, 0);
+    io_uring_prep_splice(sqeN, ctxW->pipes[0], -1, ctxW->networkFd, -1, ctxW->targetWrite, 0);
     sqeN->user_data = (unsigned long)ctxW;
     //there was no need to this? Its the end of the logical chain?
 
+    char fdPath[64];
+    char fdLink[64];
+    snprintf(fdPath, sizeof(fdPath), "/proc/self/fd/%d", ctxW->fileFd);
+    ssize_t len = readlink(fdPath, fdLink, sizeof(fdLink) - 1);
+    if (len != -1) {
+        fdLink[len] = '\0';
+    }
+    printf("         Submitting uring events for context fd %d and local filename %s\n", ctxW->networkFd, fdLink);
     io_uring_submit(&ring);
 }

@@ -35,6 +35,7 @@ int sendDataCb(nghttp2_session *session,
         
         // nghttp2 emits one DATA frame per chunk, in order, subheads are added because uring can reorder them
         memcpy((void*)framehd, ctx->write->frameHeader, sizeof(ctx->write->frameHeader));
+        ctx->write->networkFd = static_cast<socketCtx*>(user_data)->outgoingFd;
         prepUring(ctx->write);
 
         

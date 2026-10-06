@@ -45,7 +45,6 @@ void serverWorker(int controlPipe){
             entr.settings_id = NGHTTP2_SETTINGS_INITIAL_WINDOW_SIZE;
             entr.value = 65535;
 
-    printf("serverWorker started on pipe: %d\n", controlPipe);
     epoll_event event{};
     event.events = EPOLLIN;
     event.data.ptr = nullptr;
@@ -100,14 +99,12 @@ void serverWorker(int controlPipe){
             clientEvent.events = EPOLLIN;
             clientEvent.data.ptr = sCtx;
             if (epoll_ctl(epollFd, EPOLL_CTL_ADD, clientCtx->outgoingFd, &clientEvent) == -1) {
-                std::perror("epoll_ctl client socket");
                 nghttp2_session_del(session);
                 close(clientCtx->outgoingFd);
                 delete clientCtx;
                 delete sCtx;
             }
         } else {
-            printf("from external socket\n");
             sessionCtx* sCtx = static_cast<sessionCtx*>(events[0].data.ptr);
 
             ssize_t bytesRead = read(sCtx->client->outgoingFd, staticBuffer, sizeof(staticBuffer));
@@ -118,7 +115,8 @@ void serverWorker(int controlPipe){
             }
 
             ssize_t received = nghttp2_session_mem_recv(sCtx->session, staticBuffer, static_cast<size_t>(bytesRead));
-            printf("nghttp2_session_mem_recv returned: %zd\n", received);
+            printf("nghttp2_session_mem_recv returned: %zd", received);
+            printf(" code being: %s\n", nghttp2_strerror(received));
 
         }
     }

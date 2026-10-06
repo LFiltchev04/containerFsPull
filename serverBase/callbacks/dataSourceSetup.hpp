@@ -15,7 +15,6 @@ int onFrameRecv(nghttp2_session *session, const nghttp2_frame *frame, void *user
     
 
     if(frame->hd.type == NGHTTP2_HEADERS && frame->headers.cat == NGHTTP2_HCAT_REQUEST){
-        printf("Received request headers for stream_id=%d\n", frame->hd.stream_id);
     
         nghttp2_nv hdrs[2];
         if (frame->hd.type == NGHTTP2_HEADERS && frame->headers.cat == NGHTTP2_HCAT_REQUEST) {
@@ -28,7 +27,6 @@ int onFrameRecv(nghttp2_session *session, const nghttp2_frame *frame, void *user
         nghttp2_data_provider provider;
         provider.read_callback = dataReadCb;
     
-        printf("Submitting response for stream_id=%d\n", frame->hd.stream_id);
 
         if(frame->hd.stream_id % 2 != 0){
             int res = nghttp2_submit_response(session, frame->hd.stream_id, hdrs, 2, &provider);
