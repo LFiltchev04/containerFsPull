@@ -26,8 +26,8 @@ struct resumeCtx{
     inline static int devNullFd;
     std::mutex mtx;
 
-    int *fd;  
-    int fileFd = -1;
+    int *networkFd = nullptr;  
+    int *fileFd = nullptr;
     subheader sh;
     uint8_t subheaderOffset = 0u;
     iovec iov[2];
@@ -39,7 +39,7 @@ struct resumeCtx{
     writeState stage = HEADER;
 
     resumeCtx(){
-        fd = nullptr;
+        networkFd = nullptr;
         offsetTrack = 0;
         targetWrite = 0;
 
@@ -53,8 +53,8 @@ struct resumeCtx{
     }
 
     void reset(){
-        fd = nullptr;
-        fileFd = -1;
+        networkFd = nullptr;
+        fileFd = nullptr;
         offsetTrack = 0;
         targetWrite = 0;
         subheaderOffset = 0u;
@@ -93,7 +93,7 @@ void prepUring(resumeCtx* ctxW){
         ctxW->iov[1] = { ctxW->frameHeader, sizeof(ctxW->frameHeader) };
 
         io_uring_sqe *sqeH = io_uring_get_sqe(&ring);
-        io_uring_prep_writev(sqeH, *ctxW->fd, ctxW->iov, 2, ctxW->subheaderOffset);
+        io_uring_prep_writev(sqeH, *ctxW->networkFd, ctxW->iov, 2, ctxW->subheaderOffset);
         sqeH->flags = IOSQE_IO_LINK;
 
         sqeH->user_data = (unsigned long)ctxW;
@@ -101,13 +101,13 @@ void prepUring(resumeCtx* ctxW){
 
     //file-to-pipe
     io_uring_sqe *sqeD = io_uring_get_sqe(&ring);
-    io_uring_prep_splice(sqeD, ctxW->fileFd, ctxW->offsetTrack, ctxW->pipes[1], -1, ctxW->targetWrite, 0);
+    io_uring_prep_splice(sqeD, *ctxW->fileFd, ctxW->offsetTrack, ctxW->pipes[1], -1, ctxW->targetWrite, 0);
     sqeD->flags = IOSQE_IO_LINK;
     sqeD->user_data = (unsigned long)ctxW;
 
     //pipe to socket
     io_uring_sqe *sqeN = io_uring_get_sqe(&ring);
-    io_uring_prep_splice(sqeN, ctxW->pipes[0], -1, *ctxW->fd, -1, ctxW->targetWrite, 0);
+    io_uring_prep_splice(sqeN, ctxW->pipes[0], -1, *ctxW->networkFd, -1, ctxW->targetWrite, 0);
     sqeN->user_data = (unsigned long)ctxW;
     //there was no need to this? Its the end of the logical chain?
 

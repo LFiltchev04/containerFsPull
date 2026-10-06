@@ -34,10 +34,10 @@ int onHeaderRecvCb(nghttp2_session *session,
         ctx->path = headerValue.data();
         ctx->path.shrink_to_fit(); //alloc and then dealloc, a wonder
         
-        if(ctx->openFd == -1){
-            ctx->openFd = open(ctx->path.c_str(), O_RDONLY);
+        if(*ctx->openFd == -1){
+            *ctx->openFd = open(ctx->path.c_str(), O_RDONLY);
         }
-        
+
     }
 
     return 0;
