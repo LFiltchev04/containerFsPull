@@ -32,20 +32,17 @@ ssize_t dataReadCb(nghttp2_session *session,
     stat(ctx->path.c_str(), &st);
     printf("File size: %ld\n", st.st_size);
     
-    uint32_t fileOfsetTrack = ctx->fileOffset;
     
     
 
-    if(st.st_size < chunkLimit){
-        printf("File size is less than chunk limit, using targetWrite=%ld\n", (long)st.st_size);
+    if((st.st_size - ctx->fileOffset) < chunkLimit){
         auto *ctxW = resumeCtxPool->get();        
 
         ctxW->targetWrite = st.st_size;
-        ctxW->offsetTrack = fileOfsetTrack;
+        ctxW->offsetTrack += ctxW->targetWrite;
         ctxW->fileFd = ctx->openFd;
         ctx->write = (resumeCtx*)ctxW;
 
-        fileOfsetTrack += ctxW->targetWrite;
 
         *data_flags |= NGHTTP2_DATA_FLAG_NO_COPY | NGHTTP2_DATA_FLAG_EOF;
         return ctxW->targetWrite;
@@ -55,7 +52,7 @@ ssize_t dataReadCb(nghttp2_session *session,
         auto *ctxW = resumeCtxPool->get();        
 
         ctxW->targetWrite = chunkLimit;
-        ctxW->offsetTrack = fileOfsetTrack;
+        ctxW->offsetTrack += ctxW->targetWrite;
         ctxW->fileFd = ctx->openFd;
         ctx->write = (resumeCtx*)ctxW;
 
@@ -63,15 +60,8 @@ ssize_t dataReadCb(nghttp2_session *session,
         *data_flags |= NGHTTP2_DATA_FLAG_NO_COPY | NGHTTP2_DATA_FLAG_EOF;
         return ctxW->targetWrite;
 
-        fileOfsetTrack += ctxW->targetWrite;
-    }
-
-    ctx->fileOffset = fileOfsetTrack;
-
-    if(fileOfsetTrack <= st.st_size){
-        *data_flags |= (NGHTTP2_DATA_FLAG_NO_COPY | NGHTTP2_DATA_FLAG_EOF);
     }
 
 
-    return fileOfsetTrack;
+    
 }
