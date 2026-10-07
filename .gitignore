@@ -1,0 +1,7 @@
+Makefile
+CMakeFiles
+cmake*
+CMakeCache.txt
+onDemandBackend
+.vscode
+trc
