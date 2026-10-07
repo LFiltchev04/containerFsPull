@@ -1,18 +1,15 @@
 #pragma once
 
 #include <string>
+#include "../basicDecoder.hpp"
 
 
 
-class tarReader {
-    std::string tarPath;
-    std::string metaPath;
-
-    uint64_t offsetPosition;
+class tarReader : public basicDecoder {
 
     public:
-    tarReader(const std::string& path) : tarPath(path), offsetPosition(0){}
+    tarReader(const std::string& path);
 
-    void seekGuide(int *fd, std::string& targetPath);
+    int offsetUpdate(int fileOffset) override;
 
 };
