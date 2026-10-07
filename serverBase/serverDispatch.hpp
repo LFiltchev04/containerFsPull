@@ -6,7 +6,7 @@
 
 #include "sockCtx.hpp"
 
-const int numWorkers = 4;
+const int numWorkers = 1;
 
 int pipePool[numWorkers][2];
 

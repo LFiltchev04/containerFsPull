@@ -8,6 +8,8 @@ void runApp(){
 	printf("trying to run\n");
 
     printf("Current process ID: %d\n", getpid());
+    setupUring();
+
 
 	for(int x = 0; x < numWorkers; x++ ){
 		pipe(pipePool[x]);
@@ -19,7 +21,6 @@ void runApp(){
 		serverThread.detach();
 	}
 
-	setupUring();
 
 	serverListener(8080);
 

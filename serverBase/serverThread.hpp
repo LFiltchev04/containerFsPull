@@ -34,7 +34,7 @@ inline void destroySessionContext(int epollFd, sessionCtx* sCtx){
 }
 
 void serverWorker(int controlPipe){
-    uint8_t eventfdBlackHole;
+    
     unsigned head = 0;
     io_uring_cqe* cqe = nullptr;
     int evfd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
@@ -77,13 +77,17 @@ void serverWorker(int controlPipe){
 
         //completion handler for cqes
         if(events[0].data.fd == evfd){
+            uint64_t eventfdBlackHole;
             printf("Processing uring events\n");
             unsigned count = 0;
             io_uring_for_each_cqe(&ring, head, cqe) {
-                printf("why arent you running you fucking idiot???????");
                 cqeFinish(cqe);
                 count++;
-                read(evfd, &eventfdBlackHole, sizeof(uint8_t));
+                read(evfd, &eventfdBlackHole, 8);
+            }
+
+            if (count > 0) {
+               io_uring_cq_advance(&ring, count);
             }
             continue;
         }
