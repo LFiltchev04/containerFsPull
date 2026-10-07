@@ -1,7 +1,12 @@
 Makefile
-CMakeFiles
+/CMakeFiles/*
 cmake*
 CMakeCache.txt
 onDemandBackend
 .vscode
 trc
+/build
+/CMakeFiles
+CMakeCache.txt
+Makefile
+text.txt
