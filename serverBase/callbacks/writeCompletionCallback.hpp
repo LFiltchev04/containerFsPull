@@ -47,7 +47,6 @@ void cqeFinish(struct io_uring_cqe* cqe){
 
     if(ctxW->stage == COMPLETE){
         //call the global cleanup, dump the stream CTX, return everything to pool
-
         resumeCtxPool->yield(ctxW);
 
         //wire in nghttp2 streamID dump, if you dont clear them out you hit max connections, they dont resolve alone, maybe send a termination
