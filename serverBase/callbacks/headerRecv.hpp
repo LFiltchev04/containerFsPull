@@ -39,6 +39,8 @@ int onHeaderRecvCb(nghttp2_session *session,
             ctx->openFd = open(ctx->path.c_str(), O_RDONLY);
         }
 
+        
+
     }
 
     //leads to the container index read process
