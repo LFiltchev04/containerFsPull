@@ -6,7 +6,7 @@ baseTreeTransition::baseTreeTransition(){
     hitCount = 0;
 }
 
-void baseTreeTransition::initialize(std::string *s, std::string *d){
+void baseTreeTransition::initialize(baseTreeNode *s, baseTreeNode *d){
     src = s;
     dst = d;
 }
@@ -21,10 +21,10 @@ uint32_t *baseTreeTransition::getAccessCount(){
     return &accessCount;
 }
 
-std::string* baseTreeTransition::getSrc(){
+baseTreeNode* baseTreeTransition::getSrc(){
     return src;
 }
 
-std::string* baseTreeTransition::getDst(){
+baseTreeNode* baseTreeTransition::getDst(){
     return dst;
 }

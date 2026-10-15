@@ -1,9 +1,12 @@
+#pragma once
+
 #include <string>
 
+#include "baseTreeNode.hpp"
 
 class baseTreeTransition{
-    std::string *src;
-    std::string *dst;
+    baseTreeNode *src;
+    baseTreeNode *dst;
 
     uint32_t accessCount;
     uint32_t hitCount;
@@ -12,10 +15,10 @@ class baseTreeTransition{
     baseTreeTransition();
     
     void recordTransition();
-    void initialize(std::string *s, std::string *d);
+    void initialize(baseTreeNode *s, baseTreeNode *d);
     
-    std::string* getSrc();
-    std::string* getDst();
+    baseTreeNode* getSrc();
+    baseTreeNode* getDst();
 
     uint32_t *getAccessCount();
 };
