@@ -13,8 +13,8 @@ class baseTreeNode{
 
     public:
     baseTreeNode(std::string *nodeName);
-    void addTransition(std::string *transTgt);
+    void addTransition(baseTreeNode* transTgt);
     void setActive();
     bool getActive();
-    
+    std::string* getAddr();
 };

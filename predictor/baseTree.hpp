@@ -13,6 +13,8 @@ class baseTree{
 
     std::unordered_map<std::string, baseTreeNode*> fastPositionLookup;
     std::mutex treeMutex; //only locked for writes of new entries, cache hit updates proceed on node lock level
+    baseTreeNode* owned[12]; //the paths to keep in a subrange
+    uint8_t occupied;
 
     std::string* lastTwo[2];    
 

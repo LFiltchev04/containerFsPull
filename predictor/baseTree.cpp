@@ -11,20 +11,42 @@ void baseTree::addEdge(std::string crrPath, std::string newPath){
     auto crrNode = fastPositionLookup.find(crrPath);
     auto newNode = fastPositionLookup.find(newPath);
 
+    //since its tapped directly to network i need to sanitize
     if((crrNode != fastPositionLookup.end()) and
        (newNode != fastPositionLookup.end())){
 
-        entries->emplace_back(newPath);
-        fastPositionLookup[newPath] = &entries->back();
+        //for combinatorial jump index
+        lastTwo[0] = &crrPath;
+        lastTwo[1] = &newPath;
+
+        //inserts only for empty slots
+        if(occupied < 12){
+            owned[occupied] = newNode->second;
+            occupied++;
+        }
+
+        //finds ones that already exists and increments them
+        for(uint8_t x = 0; x < occupied; x++){
+            if(owned[x] == crrNode->second){
+                
+                owned[x]->addTransition(newNode->second);
+                break;
+            }
+        }
+
+        uint32_t smallestIdx = 0;
+        for(uint8_t x = 0; x < occupied; x++){
+            if(owned[x]->getActive() < owned[smallestIdx]->getActive()){
+                smallestIdx = x;
+            }
+        }
+
+
+        if(crrNode->first == crrPath){
+            owned[smallestIdx]->addTransition(newNode->second);
+        }
+
     }
-
-    if(newNode == fastPositionLookup.end()){
-        entries->emplace_back(newPath);
-        fastPositionLookup[newPath] = &entries->back();
-    }
-
-
-    &entries->back();
 }
 
 
