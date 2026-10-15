@@ -7,6 +7,7 @@
 
 class tarReader : public basicDecoder {
 
+    struct archive* arch;
     public:
     tarReader(const std::string& path);
 

@@ -47,10 +47,10 @@ void serverWorker(int controlPipe){
     }
 
     nghttp2_settings_entry entr;
-            entr.settings_id = NGHTTP2_SETTINGS_MAX_CONCURRENT_STREAMS;
-            entr.value = 100;
-            entr.settings_id = NGHTTP2_SETTINGS_INITIAL_WINDOW_SIZE;
-            entr.value = 65535;
+        entr.settings_id = NGHTTP2_SETTINGS_MAX_CONCURRENT_STREAMS;
+        entr.value = 100;
+        entr.settings_id = NGHTTP2_SETTINGS_INITIAL_WINDOW_SIZE;
+        entr.value = 65535;
 
     epoll_event event{};
     event.events = EPOLLIN;
