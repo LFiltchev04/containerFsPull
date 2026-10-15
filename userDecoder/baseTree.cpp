@@ -46,3 +46,22 @@ void baseTree::updateState(std::string transitionTarget, bool hit){
     }
 
 }
+
+
+void baseTree::setOrigin(std::string originPath){
+    if(entries.size() == 0){
+        entries.emplace_back(originPath);
+        lastFive[0] = &entries.back();
+        fastPositionLookup[originPath] = &entries.back();
+    }else{
+        lastFive[0] = fastPositionLookup[originPath];
+    }
+}
+
+
+void baseTree::addEntry(std::string crrPath, std::string newPath){
+    
+    
+    std::lock_guard<std::mutex> l(treeMutex);
+
+}
