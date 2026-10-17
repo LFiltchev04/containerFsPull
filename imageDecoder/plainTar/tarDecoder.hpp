@@ -1,14 +1,17 @@
 #pragma once
 
 #include <string>
-#include <unordered_map>
+#include <vector>
 
 
 #include <archive.h>
 #include <archive_entry.h>
 #include <cstdint>
 #include <cstring>
+#include <filesystem>
+#include <sys/mman.h>
 
+namespace fs = std::filesystem;
 
 #include "../basicDecoder.hpp"
 
@@ -18,15 +21,18 @@ struct xxHashStruct {
     std::string pathName;
 };
 
-class tarReader : public basicDecoder {
+class tarDecoder : public basicDecoder {
 
+    void* mmapAddr;
     struct archive* arch;
-    std::unordered_map<std::string, xxHashStruct> fileOffsets;
+    std::vector<xxHashStruct> fileOffsets;
 
     public:
-    tarReader(const std::string& path);
-    void trashfileDecoder(const std::string& path); //lonng sync process to make the go output sparse
+    tarDecoder(const std::string& path);
+    void trashTarDecoder(const std::string& path); //lonng sync process to make the go output sparse
 
-    int offsetUpdate(int fileOffset) override;
+    std::string fromPathHash(std::string path) override;
+    std::string fromHashPath(std::string hash) override;
+    void streamParser();
 
 };

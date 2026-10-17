@@ -15,7 +15,7 @@
 basicDecoder::basicDecoder(std::string hash){
 
     //just opens the base archive
-    baseDirPath = globalBackendPV + "/docker/registry/v2/blobs/sha256/" + hash.substr(0,2) + "/" + hash;
+    archPath = globalBackendPV + "/docker/registry/v2/blobs/sha256/" + hash.substr(0,2) + "/" + hash;
     
     
     std::string temp = globalBackendPV + "/docker/registry/v2/blobs/sha256/" + hash.substr(0,2) + "/" + hash + "/index.offst"; 
@@ -25,7 +25,7 @@ basicDecoder::basicDecoder(std::string hash){
 
     struct archive *archPtr = archive_read_new();
     archive_read_support_format_tar(archPtr);
-    archive_read_open_filename(archPtr, baseDirPath.data(), 10240);
+    archive_read_open_filename(archPtr, archPath.data(), 10240);
     archive_read_support_compression_none(archPtr);
 
     struct archive_entry* entry;

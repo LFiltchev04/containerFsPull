@@ -6,16 +6,16 @@
 
 
 std::string globalBackendPV;
-//implements basic functionality for distribution backend traversal
+//implements basic functionality for distribution backend traversal opens one decoder per single layer
+
 class basicDecoder{
 
     protected:
-    std::string baseDirPath;
-    int baseOffsetFd;
+    std::string archPath;
     
     public:
-    basicDecoder(std::string hash);
-    virtual int offsetUpdate(int fileOffset) = 0; //does a lookup in the tar offset table to get the right offset position
-
+    basicDecoder(std::string archPath) : archPath(archPath){}
+    virtual std::string fromPathHash(std::string path) = 0;
+    virtual std::string fromHashPath(std::string hash) = 0;
 
 };
