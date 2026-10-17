@@ -50,13 +50,16 @@ void tarDecoder::trashTarDecoder(const std::string& hash) {
     }
 
 
+    mmapAddr = mapped;
+
     //since its a 6 byte offset the xxHash maps fully to the memory range, disk persistent hashmap without overhead
     //this thing adds the vector entries into the map
     
     int opCount = 0;
     for (const auto& xxHstruct : fileOffsets) {
-        uintmax_t offset = *reinterpret_cast<const uintmax_t*>(xxHstruct.xxHashID);
-        memcpy(static_cast<char*>(mapped) + offset, &xxHstruct, sizeof(xxHashStruct));
+        uintmax_t offset = 0;
+        memcpy(&offset, xxHstruct.xxHashID, 6);
+        memcpy(static_cast<char*>(mapped) + offset, &xxHstruct, XX_SLOT_SIZE);
         opCount++;
         if(opCount % 100 == 0){
             //flush to disk, make sure its persistent
@@ -66,3 +69,27 @@ void tarDecoder::trashTarDecoder(const std::string& hash) {
 
 }
 
+xxHashStruct tarDecoder::fromPathHash(const std::string& path) {
+    uint64_t full_hash = XXH3_64bits(path.data(), path.size());
+
+    // Truncate down to the 6-byte (48-bit) address space
+    uint64_t slot_index = full_hash & ((1ULL << 48) - 1);
+
+    xxHashStruct result{};
+    if (!mmapAddr) return result;
+    memcpy(&result, static_cast<char*>(mmapAddr) + slot_index, XX_SLOT_SIZE);
+    return result;
+}
+
+
+xxHashStruct tarDecoder::fromHashPath(std::string hash) {
+    uint64_t full_hash = XXH3_64bits(hash.data(), hash.size());
+
+    // Truncate down to the 6-byte (48-bit) address space
+    uint64_t slot_index = full_hash & ((1ULL << 48) - 1);
+
+    xxHashStruct result{};
+    if (!mmapAddr) return result;
+    memcpy(&result, static_cast<char*>(mmapAddr) + slot_index, XX_SLOT_SIZE);
+    return result;
+}

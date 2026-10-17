@@ -1,9 +1,21 @@
+#pragma once
 #include <string>
+#include <cstdint>
+#include <cstddef>
 #include <unordered_map>
 #include <fcntl.h>
 #include <archive.h>
 #include <archive_entry.h>
 
+
+struct xxHashStruct {
+    char xxHashID[8];
+    uint16_t recordLen;
+    std::string pathName;
+};
+
+// Only the trivially-copyable prefix (xxHashID + recordLen) is stored in the mmap slot.
+constexpr size_t XX_SLOT_SIZE = offsetof(xxHashStruct, recordLen) + sizeof(uint16_t);
 
 std::string globalBackendPV;
 //implements basic functionality for distribution backend traversal opens one decoder per single layer
@@ -15,7 +27,7 @@ class basicDecoder{
     
     public:
     basicDecoder(std::string archPath) : archPath(archPath){}
-    virtual std::string fromPathHash(std::string path) = 0;
+    virtual xxHashStruct fromPathHash(const std::string& path) = 0;
     virtual std::string fromHashPath(std::string hash) = 0;
 
 };
