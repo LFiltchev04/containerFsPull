@@ -1,6 +1,8 @@
 #include <string>
 #include <unordered_map>
 #include <fcntl.h>
+#include <archive.h>
+#include <archive_entry.h>
 
 
 std::string globalBackendPV;
