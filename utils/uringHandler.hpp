@@ -14,7 +14,6 @@ inline io_uring ring;
 inline std::mutex ringMtx; 
 
 
-// stage tag stored in the low bits of user_data (ctx is 8-byte aligned)
 enum writeState{ 
     HEADER = 0, //if header is sent the initial iovec must be skipped
     PIPE_TO_SOCK = 10, // the file->pipe operation is carefully sized and is thus expected to never actually come short, only the network socket is a problem

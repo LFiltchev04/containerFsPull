@@ -27,5 +27,5 @@ class globalDecoderObj {
     std::string getPathHash(std::string xxHash); //returns path from hash
     std::string getxxHashID(std::string path); //returns xxHash from path
     
-
+    basicDecoder* getDecoder(std::string hash);
 };

@@ -29,4 +29,18 @@ void globalDecoderObj::addDecoder(std::string hash){
     if(type == PLAIN_TAR){
         decoders.push_back(new tarDecoder(properLocation));
     }
+
+    this->seenHashes[hash] = decoders.back();
 }
+
+
+basicDecoder* globalDecoderObj::getDecoder(std::string hash){
+    if(seenHashes.find(hash) != seenHashes.end()){
+        return seenHashes[hash];
+    }
+
+    printf("tried to run a hash, got nothing: %s\n", hash.c_str());
+    return nullptr;
+}
+
+

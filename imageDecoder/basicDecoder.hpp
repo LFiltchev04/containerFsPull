@@ -26,8 +26,10 @@ class basicDecoder{
     
     public:
     basicDecoder(std::string archPath) : archPath(archPath){}
-    virtual xxHashStruct fromPathHash(const std::string& path) = 0;
-    virtual xxHashStruct fromHashPath(std::string hash) = 0;
+    virtual xxHashStruct fromPathHash(const std::string& path) = 0; //hashesh a path, returns file metadata
+    virtual xxHashStruct fromHashPath(std::string hash) = 0; // resolves a hash returns metadata
+
+
 
     virtual std::string getImageHash() = 0;
 };

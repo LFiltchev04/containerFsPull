@@ -65,50 +65,28 @@ void tarDecoder::trashTarDecoder(const std::string& hash) {
 }
 
 xxHashStruct tarDecoder::fromPathHash(const std::string& path) {
-    uint64_t full_hash = XXH3_64bits(path.data(), path.size());
+    uint64_t fullHash = XXH3_64bits(path.data(), path.size());
 
-    // Truncate down to the 6-byte (48-bit) address space
-    uint64_t slot_index = full_hash & ((1ULL << 48) - 1);
+    // 6 byte truncate
+    uint64_t slotIndex = fullHash & ((1ULL << 48) - 1);
 
     xxHashStruct result{};
     if (!mmapAddr) return result;
-    memcpy(&result, static_cast<char*>(mmapAddr) + slot_index, XX_SLOT_SIZE);
+    memcpy(&result, static_cast<char*>(mmapAddr) + slotIndex, XX_SLOT_SIZE);
     return result;
 }
 
 
 xxHashStruct tarDecoder::fromHashPath(std::string hash) {
-    uint64_t full_hash = XXH3_64bits(hash.data(), hash.size());
+    uint64_t fullHash = XXH3_64bits(hash.data(), hash.size());
 
-    // Truncate down to the 6-byte (48-bit) address space
-    uint64_t slot_index = full_hash & ((1ULL << 48) - 1);
+    // truncates to 6 bytes
+    uint64_t slotIndex = fullHash & ((1ULL << 48) - 1);
 
     xxHashStruct result{};
     if (!mmapAddr) return result;
-    memcpy(&result, static_cast<char*>(mmapAddr) + slot_index, XX_SLOT_SIZE);
+    memcpy(&result, static_cast<char*>(mmapAddr) + slotIndex, XX_SLOT_SIZE);
+
     return result;
 }
 
-
-
-
-void tarDecoder::tarStreamParser() {
-    archive* arch = archive_read_new();
-    archive_read_support_format_tar(arch);
-    if (archive_read_open_filename(arch, tarPath.c_str(), 10240) != ARCHIVE_OK) {
-        printf("Failed to open tar archive: %s\n", tarPath.c_str());
-        return;
-    }
-
-    archive_entry* entry;
-    while (archive_read_next_header(arch, &entry) == ARCHIVE_OK) {
-        const char* path = archive_entry_pathname(entry);
-        
-        if (path) {
-            xxHashStruct xxHstruct = fromPathHash(path);
-            fileOffsets.push_back(xxHstruct);
-        }
-        archive_read_data_skip(arch);
-    }
-    archive_read_free(arch);
-}

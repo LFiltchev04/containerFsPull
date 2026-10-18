@@ -9,9 +9,15 @@ long sendNormalCb(nghttp2_session *session, const uint8_t *data, size_t length, 
     printf("sendNormalCb called with length: %zu\n", length);
 
     printf("sendNormalCb called for fd: %d\n", static_cast<socketCtx*>(user_data)->outgoingFd);
-    ssize_t written = write(static_cast<socketCtx*>(user_data)->outgoingFd, data, length);
-    if (written == -1) {
-        return NGHTTP2_ERR_CALLBACK_FAILURE;
+
+    //proper drain of sync callback
+    ssize_t written = 0;
+    while (written < static_cast<ssize_t>(length)) {
+        ssize_t ret = write(static_cast<socketCtx*>(user_data)->outgoingFd, data + written, length - written);
+        if (ret == -1) {
+            return NGHTTP2_ERR_CALLBACK_FAILURE;
+        }
+        written += ret;
     }
 
     printf("about to return: %zd\n", written);
