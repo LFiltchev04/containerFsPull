@@ -30,6 +30,8 @@ class tarDecoder : public basicDecoder {
 
     xxHashStruct fromPathHash(const std::string& path) override;
     xxHashStruct fromHashPath(std::string hash) override;
-    void streamParser();
+
+    std::string getImageHash() override;
+    void tarStreamParser();
 
 };

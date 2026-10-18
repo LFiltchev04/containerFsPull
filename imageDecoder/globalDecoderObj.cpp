@@ -1,22 +1,23 @@
 #include "globalDecoderObj.hpp"
 
 
-
 globalDecoderObj::globalDecoderObj() {}
 
 
-void globalDecoderObj::addDecoder(std::string location){
-    int fd = open(location.c_str(), O_RDONLY);
+void globalDecoderObj::addDecoder(std::string hash){
+
+    std::string properLocation = GLOBAL_BACKEND_PV + "/docker/registry/v2/blobs/sha256/" + hash.substr(0,2) + "/" + hash;
+    int fd = open(properLocation.c_str(), O_RDONLY);
 
     if (fd < 0) {
-        printf("couldnt open file: %s\n", location.c_str());
+        printf("couldnt open file: %s\n", properLocation.c_str());
         return;
     }
 
 
-    int fd = open(location.c_str(), O_RDONLY);
+    int fd = open(properLocation.c_str(), O_RDONLY);
     if(fd < 0){
-        printf("couldnt open file: %s\n", location.c_str());
+        printf("couldnt open file: %s\n", properLocation.c_str());
         return;
     }
 
@@ -26,6 +27,6 @@ void globalDecoderObj::addDecoder(std::string location){
     uint16_t type = *(uint16_t*)typeBuf;
 
     if(type == PLAIN_TAR){
-        decoders.push_back(new tarDecoder(location));
+        decoders.push_back(new tarDecoder(properLocation));
     }
 }

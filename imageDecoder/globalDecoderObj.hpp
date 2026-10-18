@@ -8,15 +8,18 @@ enum decoderType {
     PLAIN_TAR
 };
 
+std::string GLOBAL_BACKEND_PV = "/volumes/csi/tst/125eecc6-0ff2-41ca-bef6-14c6503f8b70";
 
 class globalDecoderObj {
     std::string sourceDir; 
     std::vector <basicDecoder*> decoders;
+    std::unordered_map<std::string, basicDecoder*> seenHashes;
 
     public:
     globalDecoderObj();
 
-    void addDecoder(std::string location); //adds a decoder from a base file
+    bool seen(std::string hash);
+    void addDecoder(std::string hash); //adds a decoder from a base file
     
     std::string getLayerFromHash(std::string xxHash); //returns layer from hash
     std::string getLayerFromPath(std::string path); //returns layer from path

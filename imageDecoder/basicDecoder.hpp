@@ -4,8 +4,7 @@
 #include <cstddef>
 #include <unordered_map>
 #include <fcntl.h>
-#include <archive.h>
-#include <archive_entry.h>
+
 
 
 struct xxHashStruct {
@@ -28,6 +27,7 @@ class basicDecoder{
     public:
     basicDecoder(std::string archPath) : archPath(archPath){}
     virtual xxHashStruct fromPathHash(const std::string& path) = 0;
-    virtual std::string fromHashPath(std::string hash) = 0;
+    virtual xxHashStruct fromHashPath(std::string hash) = 0;
 
+    virtual std::string getImageHash() = 0;
 };

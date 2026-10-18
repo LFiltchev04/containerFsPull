@@ -5,16 +5,11 @@ tarDecoder::tarDecoder(const std::string& path) : basicDecoder(path){
 }
 
 
-std::string GLOBAL_BACKEND_PV_PATH = "/volumes/csi/tst/125eecc6-0ff2-41ca-bef6-14c6503f8b70";
-std::string GLOBAL_BACKEND_PV_BLOBS = "/mnt/cephfs/volumes/csi/tst/125eecc6-0ff2-41ca-bef6-14c6503f8b70/docker/registry/v2/blobs/sha256";
-
 //assumes a path in the user PV
 void tarDecoder::trashTarDecoder(const std::string& hash) {
-    std::string substr = hash.substr(0, 2);
-    std::string mtbHsh = hash;
+
     
-    std::string contDir = GLOBAL_BACKEND_PV_BLOBS + "/" + mtbHsh + "/" + substr + "/" + hash;
-    int resFd = open((contDir + "/trashfile").c_str(), O_RDONLY);
+    int resFd = open((hash + "/trashfile").c_str(), O_RDONLY);
     if (resFd < 0) {
         printf("couldnt open trashfile: %s\n", hash.c_str());
         return;
@@ -31,20 +26,20 @@ void tarDecoder::trashTarDecoder(const std::string& hash) {
     
     
 
-    int idxFd = open((contDir + "/fastMap").c_str(), O_RDWR | O_TRUNC | O_CREAT, 0666);
+    int idxFd = open((hash + "/fastMap").c_str(), O_RDWR | O_TRUNC | O_CREAT, 0666);
 
     //6 bytes of address range, 256tb VMA, lets see if it dies
     uintmax_t address_range_size = 1ULL << 48;
     ftruncate(idxFd, address_range_size);
     if (idxFd < 0) {
-        printf("couldnt open fastMap: %s\n", (contDir + "/fastMap").c_str());
+        printf("couldnt open fastMap: %s\n", (hash + "/fastMap").c_str());
         return;
     }
 
     
     void* mapped = mmap(mmapAddr, address_range_size, PROT_READ | PROT_WRITE, MAP_SHARED, idxFd, 0);
     if (mapped == MAP_FAILED) {
-        printf("mmap failed for fastMap: %s\n", (contDir + "/fastMap").c_str());
+        printf("mmap failed for fastMap: %s\n", (hash + "/fastMap").c_str());
         close(idxFd);
         return;
     }
@@ -92,4 +87,28 @@ xxHashStruct tarDecoder::fromHashPath(std::string hash) {
     if (!mmapAddr) return result;
     memcpy(&result, static_cast<char*>(mmapAddr) + slot_index, XX_SLOT_SIZE);
     return result;
+}
+
+
+
+
+void tarDecoder::tarStreamParser() {
+    archive* arch = archive_read_new();
+    archive_read_support_format_tar(arch);
+    if (archive_read_open_filename(arch, tarPath.c_str(), 10240) != ARCHIVE_OK) {
+        printf("Failed to open tar archive: %s\n", tarPath.c_str());
+        return;
+    }
+
+    archive_entry* entry;
+    while (archive_read_next_header(arch, &entry) == ARCHIVE_OK) {
+        const char* path = archive_entry_pathname(entry);
+        
+        if (path) {
+            xxHashStruct xxHstruct = fromPathHash(path);
+            fileOffsets.push_back(xxHstruct);
+        }
+        archive_read_data_skip(arch);
+    }
+    archive_read_free(arch);
 }
