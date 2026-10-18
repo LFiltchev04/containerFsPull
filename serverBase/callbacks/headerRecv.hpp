@@ -29,7 +29,7 @@ int onHeaderRecvCb(nghttp2_session *session,
         nghttp2_session_set_stream_user_data(session, frame->hd.stream_id, usrData);
     }
 
-    //leads to the file pull path process
+    //leads to the file pull path process for single files
     reqLifecycleCtx* ctx = static_cast<reqLifecycleCtx*>(usrData);
     if(headerName == ":path"){
         ctx->path = headerValue.data();
@@ -43,11 +43,7 @@ int onHeaderRecvCb(nghttp2_session *session,
 
     }
 
-    //leads to the container index read process
-    if(headerName == "imageHash"){
-        headerValue.data();
-    }
-
+    
 
     return 0;
 }

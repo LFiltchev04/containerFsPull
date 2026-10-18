@@ -5,6 +5,7 @@ CMakeFiles/onDemandBackend.dir/main.cpp.o: main.cpp \
   utils/genericStatAlloc.hpp \
   utils/subheaderStruct.hpp \
   utils/uringHandler.hpp \
+  serverBase/callbacks/batchWriteCtx.hpp \
   serverBase/callbacks/dataSourceSetup.hpp \
   serverBase/callbacks/datasourceCallback.hpp \
   serverBase/callbacks/headerRecv.hpp \
@@ -505,6 +506,8 @@ CMakeFiles/onDemandBackend.dir/main.cpp.o: main.cpp \
 
 /usr/include/x86_64-linux-gnu/bits/siginfo-consts-arch.h:
 
+/usr/include/x86_64-linux-gnu/bits/siginfo-arch.h:
+
 /usr/include/c++/12/cwctype:
 
 /usr/include/c++/12/bits/unique_ptr.h:
@@ -575,8 +578,6 @@ CMakeFiles/onDemandBackend.dir/main.cpp.o: main.cpp \
 
 /usr/include/x86_64-linux-gnu/bits/confname.h:
 
-/usr/include/x86_64-linux-gnu/bits/siginfo-arch.h:
-
 /usr/include/c++/12/bits/semaphore_base.h:
 
 /usr/include/asm-generic/posix_types.h:
@@ -631,36 +632,6 @@ main.cpp:
 
 /usr/include/x86_64-linux-gnu/bits/sched.h:
 
-/usr/include/c++/12/bits/this_thread_sleep.h:
-
-/usr/include/c++/12/backward/auto_ptr.h:
-
-/usr/include/c++/12/atomic:
-
-/usr/include/c++/12/debug/debug.h:
-
-/usr/include/x86_64-linux-gnu/asm/unistd_64.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/12/include/limits.h:
-
-/usr/include/c++/12/bits/std_thread.h:
-
-/usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
-
-/usr/include/c++/12/debug/assertions.h:
-
-/usr/include/x86_64-linux-gnu/bits/sockaddr.h:
-
-/usr/include/c++/12/bits/std_abs.h:
-
-serverBase/callbacks/reqLifecycleCtx.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
-
-/usr/include/asm-generic/errno.h:
-
-/usr/include/syscall.h:
-
 /usr/include/x86_64-linux-gnu/bits/wchar.h:
 
 /usr/include/c++/12/cstdlib:
@@ -671,9 +642,33 @@ serverBase/callbacks/reqLifecycleCtx.hpp:
 
 /usr/include/c++/12/bits/basic_string.h:
 
-/usr/include/c++/12/bits/locale_classes.tcc:
+/usr/include/c++/12/bits/this_thread_sleep.h:
+
+/usr/include/c++/12/backward/auto_ptr.h:
+
+/usr/include/c++/12/atomic:
+
+/usr/include/c++/12/debug/debug.h:
 
 /usr/include/x86_64-linux-gnu/bits/fcntl.h:
+
+/usr/include/c++/12/bits/locale_classes.tcc:
+
+/usr/include/x86_64-linux-gnu/asm/unistd_64.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/12/include/limits.h:
+
+/usr/include/c++/12/bits/std_thread.h:
+
+/usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
+
+serverBase/callbacks/reqLifecycleCtx.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_sched_param.h:
+
+/usr/include/asm-generic/errno.h:
+
+/usr/include/syscall.h:
 
 /usr/include/asm-generic/errno-base.h:
 
@@ -703,17 +698,11 @@ serverBase/callbacks/sendNormalCb.hpp:
 
 /usr/include/x86_64-linux-gnu/bits/long-double.h:
 
-/usr/include/c++/12/bits/stl_algobase.h:
+/usr/include/x86_64-linux-gnu/bits/sockaddr.h:
 
-serverBase/callbacks/dataSourceSetup.hpp:
+/usr/include/c++/12/bits/std_abs.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
-
-/usr/include/liburing/io_uring_version.h:
-
-/usr/include/x86_64-linux-gnu/bits/endianness.h:
-
-serverBase/sockCtx.hpp:
+/usr/include/c++/12/debug/assertions.h:
 
 /usr/include/x86_64-linux-gnu/sys/select.h:
 
@@ -737,9 +726,11 @@ serverBase/serverThread.hpp:
 
 /usr/include/c++/12/bits/hash_bytes.h:
 
-/usr/include/c++/12/bits/locale_classes.h:
+/usr/include/c++/12/bits/stl_construct.h:
 
-/usr/include/c++/12/bits/exception_defines.h:
+serverBase/serverDispatch.hpp:
+
+/usr/include/c++/12/bits/stl_vector.h:
 
 /usr/include/c++/12/climits:
 
@@ -765,11 +756,31 @@ serverBase/callbacks/datasourceCallback.hpp:
 
 /usr/include/fcntl.h:
 
-/usr/include/c++/12/bits/stl_construct.h:
+/usr/include/c++/12/bits/stl_algobase.h:
 
-serverBase/serverDispatch.hpp:
+serverBase/callbacks/dataSourceSetup.hpp:
 
-/usr/include/c++/12/bits/stl_vector.h:
+/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
+
+/usr/include/liburing/io_uring_version.h:
+
+/usr/include/x86_64-linux-gnu/bits/endianness.h:
+
+serverBase/sockCtx.hpp:
+
+serverBase/callbacks/batchWriteCtx.hpp:
+
+/usr/include/x86_64-linux-gnu/bits/typesizes.h:
+
+/usr/include/c++/12/bits/stl_pair.h:
+
+/usr/include/c++/12/concepts:
+
+/usr/include/c++/12/bits/unique_lock.h:
+
+/usr/include/c++/12/bits/memoryfwd.h:
+
+serverBase/mainCall.hpp:
 
 /usr/include/c++/12/bits/stl_tempbuf.h:
 
@@ -801,17 +812,9 @@ serverBase/callbacks/writeCompletionCallback.hpp:
 
 /usr/include/stdio.h:
 
-/usr/include/x86_64-linux-gnu/bits/typesizes.h:
+/usr/include/c++/12/bits/locale_classes.h:
 
-/usr/include/c++/12/bits/stl_pair.h:
-
-/usr/include/c++/12/concepts:
-
-/usr/include/c++/12/bits/unique_lock.h:
-
-/usr/include/c++/12/bits/memoryfwd.h:
-
-serverBase/mainCall.hpp:
+/usr/include/c++/12/bits/exception_defines.h:
 
 /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
 
@@ -822,6 +825,10 @@ serverBase/mainCall.hpp:
 /usr/include/c++/12/initializer_list:
 
 serverBase/callbacks/sendDataCb.hpp:
+
+/usr/include/c++/12/bits/basic_ios.tcc:
+
+/usr/include/c++/12/ctime:
 
 /usr/include/c++/12/bits/allocator.h:
 
@@ -842,10 +849,6 @@ serverBase/callbacks/sendDataCb.hpp:
 /usr/include/alloca.h:
 
 /usr/include/liburing/barrier.h:
-
-/usr/include/c++/12/bits/basic_ios.tcc:
-
-/usr/include/c++/12/ctime:
 
 /usr/include/c++/12/bits/atomic_wait.h:
 

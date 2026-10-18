@@ -6,6 +6,7 @@ CMakeFiles/onDemandBackend.dir/main.cpp.o
  /home/llf/onDemandFetcher/utils/genericStatAlloc.hpp
  /home/llf/onDemandFetcher/utils/subheaderStruct.hpp
  /home/llf/onDemandFetcher/utils/uringHandler.hpp
+ /home/llf/onDemandFetcher/serverBase/callbacks/batchWriteCtx.hpp
  /home/llf/onDemandFetcher/serverBase/callbacks/dataSourceSetup.hpp
  /home/llf/onDemandFetcher/serverBase/callbacks/datasourceCallback.hpp
  /home/llf/onDemandFetcher/serverBase/callbacks/headerRecv.hpp

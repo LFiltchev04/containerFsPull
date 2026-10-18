@@ -1,9 +1,8 @@
 #include "serverBase/mainCall.hpp"
 
 
-
 staticAllocatedPool<resumeCtx>* resumeCtxPool = nullptr;
-staticAllocatedPool
+staticAllocatedPool<batchWriteCtx>* batchWriteCtxPool = nullptr;
 
 int main(int argc, char* argv[]){
     
