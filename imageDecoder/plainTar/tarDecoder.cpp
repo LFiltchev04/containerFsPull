@@ -77,11 +77,10 @@ xxHashStruct tarDecoder::fromPathHash(const std::string& path) {
 }
 
 
-xxHashStruct tarDecoder::fromHashPath(std::string hash) {
-    uint64_t fullHash = XXH3_64bits(hash.data(), hash.size());
+xxHashStruct tarDecoder::fromHashPath(uint64_t hash) {
 
     // truncates to 6 bytes
-    uint64_t slotIndex = fullHash & ((1ULL << 48) - 1);
+    uint64_t slotIndex = hash & ((1ULL << 48) - 1);
 
     xxHashStruct result{};
     if (!mmapAddr) return result;

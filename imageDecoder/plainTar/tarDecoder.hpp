@@ -29,7 +29,7 @@ class tarDecoder : public basicDecoder {
     void trashTarDecoder(const std::string& path); //lonng sync process to make the go output sparse
 
     xxHashStruct fromPathHash(const std::string& path) override;
-    xxHashStruct fromHashPath(std::string hash) override;
+    xxHashStruct fromHashPath(uint64_t hash) override;
 
     std::string getImageHash() override;
 

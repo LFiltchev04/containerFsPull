@@ -24,6 +24,7 @@ class globalDecoderObj {
     std::string getLayerFromHash(std::string xxHash); //returns layer from hash
     std::string getLayerFromPath(std::string path); //returns layer from path
     
+
     std::string getPathHash(std::string xxHash); //returns path from hash
     std::string getxxHashID(std::string path); //returns xxHash from path
     

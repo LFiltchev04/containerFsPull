@@ -74,6 +74,7 @@ struct resumeCtx{
 
 //thread safe entry for submissions
 extern staticAllocatedPool<resumeCtx>* resumeCtxPool;
+extern 
 void setupUring(){
     struct io_uring_params params = {0};
     params.flags = IORING_SETUP_SQPOLL;

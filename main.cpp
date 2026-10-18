@@ -3,6 +3,7 @@
 
 
 staticAllocatedPool<resumeCtx>* resumeCtxPool = nullptr;
+staticAllocatedPool
 
 int main(int argc, char* argv[]){
     
