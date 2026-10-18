@@ -208,10 +208,86 @@ CMakeFiles/onDemandBackend.dir/main.cpp.o: \
  /home/llf/onDemandFetcher/serverBase/sockCtx.hpp \
  /home/llf/onDemandFetcher/serverBase/serverThread.hpp \
  /usr/include/x86_64-linux-gnu/sys/epoll.h \
- /usr/include/x86_64-linux-gnu/bits/epoll.h /usr/include/c++/12/vector \
- /usr/include/c++/12/bits/stl_uninitialized.h \
+ /usr/include/x86_64-linux-gnu/bits/epoll.h \
+ /usr/include/x86_64-linux-gnu/sys/eventfd.h \
+ /usr/include/x86_64-linux-gnu/bits/eventfd.h \
+ /usr/include/nghttp2/nghttp2.h /usr/include/c++/12/stdlib.h \
+ /usr/include/inttypes.h /usr/include/nghttp2/nghttp2ver.h \
+ /home/llf/onDemandFetcher/serverBase/callbacks/headerRecv.hpp \
+ /home/llf/onDemandFetcher/serverBase/callbacks/reqLifecycleCtx.hpp \
+ /usr/include/c++/12/vector /usr/include/c++/12/bits/stl_uninitialized.h \
  /usr/include/c++/12/bits/stl_vector.h \
  /usr/include/c++/12/bits/stl_bvector.h \
- /usr/include/c++/12/bits/vector.tcc /usr/include/nghttp2/nghttp2.h \
- /usr/include/c++/12/stdlib.h /usr/include/inttypes.h \
- /usr/include/nghttp2/nghttp2ver.h
+ /usr/include/c++/12/bits/vector.tcc \
+ /home/llf/onDemandFetcher/serverBase/callbacks/../../utils/uringHandler.hpp \
+ /usr/include/liburing.h /usr/include/x86_64-linux-gnu/sys/stat.h \
+ /usr/include/x86_64-linux-gnu/bits/stat.h \
+ /usr/include/x86_64-linux-gnu/bits/struct_stat.h \
+ /usr/include/x86_64-linux-gnu/bits/statx.h /usr/include/linux/stat.h \
+ /usr/include/linux/types.h /usr/include/x86_64-linux-gnu/asm/types.h \
+ /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \
+ /usr/include/x86_64-linux-gnu/bits/statx-generic.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_statx_timestamp.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_statx.h \
+ /usr/include/x86_64-linux-gnu/sys/uio.h \
+ /usr/include/x86_64-linux-gnu/bits/uio-ext.h /usr/include/signal.h \
+ /usr/include/x86_64-linux-gnu/bits/signum-generic.h \
+ /usr/include/x86_64-linux-gnu/bits/signum-arch.h \
+ /usr/include/x86_64-linux-gnu/bits/types/sig_atomic_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/siginfo_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/__sigval_t.h \
+ /usr/include/x86_64-linux-gnu/bits/siginfo-arch.h \
+ /usr/include/x86_64-linux-gnu/bits/siginfo-consts.h \
+ /usr/include/x86_64-linux-gnu/bits/siginfo-consts-arch.h \
+ /usr/include/x86_64-linux-gnu/bits/types/sigval_t.h \
+ /usr/include/x86_64-linux-gnu/bits/types/sigevent_t.h \
+ /usr/include/x86_64-linux-gnu/bits/sigevent-consts.h \
+ /usr/include/x86_64-linux-gnu/bits/sigaction.h \
+ /usr/include/x86_64-linux-gnu/bits/sigcontext.h \
+ /usr/include/x86_64-linux-gnu/bits/types/stack_t.h \
+ /usr/include/x86_64-linux-gnu/sys/ucontext.h \
+ /usr/include/x86_64-linux-gnu/bits/sigstack.h \
+ /usr/include/x86_64-linux-gnu/bits/sigstksz.h \
+ /usr/include/x86_64-linux-gnu/bits/ss_flags.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_sigstack.h \
+ /usr/include/x86_64-linux-gnu/bits/sigthread.h \
+ /usr/include/x86_64-linux-gnu/bits/signal_ext.h \
+ /usr/lib/gcc/x86_64-linux-gnu/12/include/stdbool.h /usr/include/fcntl.h \
+ /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+ /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
+ /usr/include/linux/falloc.h /usr/include/linux/swab.h \
+ /usr/include/x86_64-linux-gnu/asm/swab.h /usr/include/liburing/compat.h \
+ /usr/include/linux/time_types.h /usr/include/linux/openat2.h \
+ /usr/include/liburing/io_uring.h /usr/include/linux/fs.h \
+ /usr/include/linux/ioctl.h /usr/include/x86_64-linux-gnu/asm/ioctl.h \
+ /usr/include/asm-generic/ioctl.h /usr/include/linux/fscrypt.h \
+ /usr/include/linux/mount.h /usr/include/liburing/io_uring_version.h \
+ /usr/include/liburing/barrier.h /usr/include/c++/12/stack \
+ /usr/include/c++/12/deque /usr/include/c++/12/bits/stl_deque.h \
+ /usr/include/c++/12/bits/deque.tcc /usr/include/c++/12/bits/stl_stack.h \
+ /usr/include/c++/12/cstring /usr/include/string.h /usr/include/strings.h \
+ /usr/include/c++/12/mutex /usr/include/c++/12/bits/unique_lock.h \
+ /home/llf/onDemandFetcher/serverBase/callbacks/../../utils/genericStatAlloc.hpp \
+ /usr/include/c++/12/memory /usr/include/c++/12/bits/stl_tempbuf.h \
+ /usr/include/c++/12/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/12/bits/align.h /usr/include/c++/12/bit \
+ /usr/include/c++/12/bits/shared_ptr.h \
+ /usr/include/c++/12/bits/shared_ptr_base.h \
+ /usr/include/c++/12/bits/allocated_ptr.h \
+ /usr/include/c++/12/ext/aligned_buffer.h \
+ /usr/include/c++/12/ext/concurrence.h \
+ /usr/include/c++/12/bits/shared_ptr_atomic.h \
+ /usr/include/c++/12/backward/auto_ptr.h \
+ /usr/include/c++/12/bits/ranges_uninitialized.h \
+ /usr/include/c++/12/bits/ranges_algobase.h \
+ /usr/include/c++/12/bits/uses_allocator_args.h \
+ /usr/include/c++/12/pstl/glue_memory_defs.h \
+ /usr/include/c++/12/pstl/execution_defs.h \
+ /home/llf/onDemandFetcher/serverBase/callbacks/../../utils/resumeSingleCtx.hpp \
+ /home/llf/onDemandFetcher/serverBase/callbacks/../../utils/subheaderStruct.hpp \
+ /home/llf/onDemandFetcher/serverBase/callbacks/../../utils/resumeBatchCtx.hpp \
+ /home/llf/onDemandFetcher/serverBase/callbacks/dataSourceSetup.hpp \
+ /home/llf/onDemandFetcher/serverBase/callbacks/datasourceCallback.hpp \
+ /home/llf/onDemandFetcher/serverBase/callbacks/sendDataCb.hpp \
+ /home/llf/onDemandFetcher/serverBase/callbacks/sendNormalCb.hpp \
+ /home/llf/onDemandFetcher/serverBase/callbacks/writeCompletionCallback.hpp

@@ -25,7 +25,7 @@ struct batchRange{
 
 
 // fires off a VMA backed iovec for all assigned batches
-void mmapBatchPrep(void* mmapAddr, batchRange* range, std::string &imageHash, int outgoingFd){
+void mmapBatchPrep(void* mmapAddr, io_uring &ring, batchRange* range, std::string &imageHash, int outgoingFd){
     
     iovec iov[64];
     int filled = 0;
@@ -42,6 +42,6 @@ void mmapBatchPrep(void* mmapAddr, batchRange* range, std::string &imageHash, in
         iov[x].iov_len = xxHstruct.fileSize;
     }
 
-    io_uring_prep_writev(&sqe, outgoingFd, iov, filled, 0);
-    writev(datafileFd, iov, filled);
+    io_uring_sqe* sqe = io_uring_get_sqe(&ring);
+    io_uring_prep_writev(sqe, outgoingFd, iov, filled, 0);
 }

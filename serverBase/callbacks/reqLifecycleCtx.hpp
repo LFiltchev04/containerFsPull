@@ -12,7 +12,7 @@ struct reqLifecycleCtx{
     uint64_t fileSize = 0;
     uint64_t fileOffset = 0;
 
-    resumeCtx* write; //holds a one-off write context to set up the network write call
+    resumeCtx* write = nullptr; //holds a one-off write context to set up the network write call
 
     int networkFd = -1;
     int openFd = -1;

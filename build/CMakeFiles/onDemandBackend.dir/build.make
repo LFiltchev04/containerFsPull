@@ -92,6 +92,7 @@ onDemandBackend_EXTERNAL_OBJECTS =
 
 onDemandBackend: CMakeFiles/onDemandBackend.dir/main.cpp.o
 onDemandBackend: CMakeFiles/onDemandBackend.dir/build.make
+onDemandBackend: /usr/lib/x86_64-linux-gnu/libarchive.so
 onDemandBackend: /usr/lib/x86_64-linux-gnu/libnghttp2.so
 onDemandBackend: CMakeFiles/onDemandBackend.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/llf/onDemandFetcher/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable onDemandBackend"
