@@ -32,13 +32,14 @@ int onHeaderRecvCb(nghttp2_session *session,
     //leads to the file pull path process for single files
     reqLifecycleCtx* ctx = static_cast<reqLifecycleCtx*>(usrData);
     if(headerName == ":path"){
+        printf("Received :path header with value: %s\n", headerValue.data());
         ctx->path = headerValue.data();
         ctx->path.shrink_to_fit(); //alloc and then dealloc, a wonder
         
         if(ctx->openFd == -1){
             ctx->openFd = open(ctx->path.c_str(), O_RDONLY);
         }
-
+        printf("opened file descriptor: %d\n", ctx->openFd);
         
 
     }

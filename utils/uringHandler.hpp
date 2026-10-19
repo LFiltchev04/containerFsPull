@@ -39,7 +39,7 @@ void setupUring(){
 }
 
 //idempotent function for resubmission of uring events, context knows how to recover each short-state
-void prepUring(resumeCtx* ctxW, ssize_t length){
+void prepUring(resumeCtx* ctxW){
 
     std::lock_guard<std::mutex> lock(ringMtx);
 

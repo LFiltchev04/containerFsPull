@@ -33,21 +33,22 @@ ssize_t dataReadCb(nghttp2_session *session,
     printf("File size: %ld\n", st.st_size);
 
     uint64_t fileSize = static_cast<uint64_t>(st.st_size);
-    if (ctx->fileOffset >= fileSize) {
+    if(ctx->fileOffset >= fileSize) {
         *data_flags |= NGHTTP2_DATA_FLAG_EOF;
         return 0;
     }
 
     uint64_t remaining = fileSize - ctx->fileOffset;
     size_t bytesToSend = length;
-    if (bytesToSend > static_cast<size_t>(chunkLimit)) {
+    if(bytesToSend > static_cast<size_t>(chunkLimit)) {
         bytesToSend = static_cast<size_t>(chunkLimit);
     }
-    if (remaining < bytesToSend) {
+
+    if(remaining < bytesToSend) {
         bytesToSend = static_cast<size_t>(remaining);
     }
 
-    if (ctx->write == nullptr) {
+    if(ctx->write == nullptr) {
         ctx->write = resumeCtxPool->get();
     }
 
@@ -56,7 +57,7 @@ ssize_t dataReadCb(nghttp2_session *session,
     ctx->write->fileFd = ctx->openFd;
 
     ctx->fileOffset += bytesToSend;
-    if (ctx->fileOffset == fileSize) {
+    if(ctx->fileOffset == fileSize) {
         *data_flags |= NGHTTP2_DATA_FLAG_EOF;
     }
 
