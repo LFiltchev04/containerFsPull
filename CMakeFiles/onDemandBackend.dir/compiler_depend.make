@@ -3,9 +3,10 @@
 
 CMakeFiles/onDemandBackend.dir/main.cpp.o: main.cpp \
   utils/genericStatAlloc.hpp \
+  utils/resumeBatchCtx.hpp \
+  utils/resumeSingleCtx.hpp \
   utils/subheaderStruct.hpp \
   utils/uringHandler.hpp \
-  serverBase/callbacks/batchWriteCtx.hpp \
   serverBase/callbacks/dataSourceSetup.hpp \
   serverBase/callbacks/datasourceCallback.hpp \
   serverBase/callbacks/headerRecv.hpp \
@@ -508,10 +509,6 @@ CMakeFiles/onDemandBackend.dir/main.cpp.o: main.cpp \
 
 /usr/include/x86_64-linux-gnu/bits/siginfo-arch.h:
 
-/usr/include/c++/12/cwctype:
-
-/usr/include/c++/12/bits/unique_ptr.h:
-
 /usr/include/c++/12/cwchar:
 
 /usr/include/c++/12/cstdint:
@@ -642,11 +639,9 @@ main.cpp:
 
 /usr/include/c++/12/bits/basic_string.h:
 
-/usr/include/c++/12/bits/this_thread_sleep.h:
+/usr/include/c++/12/bits/postypes.h:
 
-/usr/include/c++/12/backward/auto_ptr.h:
-
-/usr/include/c++/12/atomic:
+/usr/include/c++/12/bits/ios_base.h:
 
 /usr/include/c++/12/debug/debug.h:
 
@@ -732,7 +727,23 @@ serverBase/serverDispatch.hpp:
 
 /usr/include/c++/12/bits/stl_vector.h:
 
+/usr/include/c++/12/atomic:
+
+utils/resumeBatchCtx.hpp:
+
 /usr/include/c++/12/climits:
+
+/usr/include/liburing/barrier.h:
+
+/usr/include/alloca.h:
+
+/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
+
+/usr/include/liburing/io_uring_version.h:
+
+/usr/include/x86_64-linux-gnu/bits/endianness.h:
+
+serverBase/sockCtx.hpp:
 
 /usr/include/asm-generic/socket.h:
 
@@ -756,20 +767,6 @@ serverBase/callbacks/datasourceCallback.hpp:
 
 /usr/include/fcntl.h:
 
-/usr/include/c++/12/bits/stl_algobase.h:
-
-serverBase/callbacks/dataSourceSetup.hpp:
-
-/usr/include/x86_64-linux-gnu/bits/stdint-intn.h:
-
-/usr/include/liburing/io_uring_version.h:
-
-/usr/include/x86_64-linux-gnu/bits/endianness.h:
-
-serverBase/sockCtx.hpp:
-
-serverBase/callbacks/batchWriteCtx.hpp:
-
 /usr/include/x86_64-linux-gnu/bits/typesizes.h:
 
 /usr/include/c++/12/bits/stl_pair.h:
@@ -789,6 +786,10 @@ serverBase/callbacks/headerRecv.hpp:
 /usr/include/c++/12/bits/basic_ios.h:
 
 /usr/include/c++/12/pstl/execution_defs.h:
+
+/usr/include/c++/12/bits/unique_ptr.h:
+
+/usr/include/c++/12/cwctype:
 
 /usr/lib/gcc/x86_64-linux-gnu/12/include/syslimits.h:
 
@@ -812,6 +813,18 @@ serverBase/callbacks/writeCompletionCallback.hpp:
 
 /usr/include/stdio.h:
 
+/usr/include/c++/12/bits/this_thread_sleep.h:
+
+/usr/include/c++/12/backward/auto_ptr.h:
+
+/usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
+
+/usr/include/linux/stddef.h:
+
+/usr/include/c++/12/bits/cxxabi_init_exception.h:
+
+/usr/include/c++/12/backward/binders.h:
+
 /usr/include/c++/12/bits/locale_classes.h:
 
 /usr/include/c++/12/bits/exception_defines.h:
@@ -826,15 +839,15 @@ serverBase/callbacks/writeCompletionCallback.hpp:
 
 serverBase/callbacks/sendDataCb.hpp:
 
-/usr/include/c++/12/bits/basic_ios.tcc:
-
-/usr/include/c++/12/ctime:
-
 /usr/include/c++/12/bits/allocator.h:
 
 /usr/include/c++/12/thread:
 
 /usr/include/c++/12/bits/cpp_type_traits.h:
+
+/usr/include/c++/12/clocale:
+
+/usr/include/c++/12/bits/chrono.h:
 
 /usr/include/c++/12/bits/nested_exception.h:
 
@@ -842,13 +855,9 @@ serverBase/callbacks/sendDataCb.hpp:
 
 /usr/include/c++/12/bits/atomic_timed_wait.h:
 
-/usr/include/c++/12/bits/postypes.h:
+/usr/include/c++/12/bits/basic_ios.tcc:
 
-/usr/include/c++/12/bits/ios_base.h:
-
-/usr/include/alloca.h:
-
-/usr/include/liburing/barrier.h:
+/usr/include/c++/12/ctime:
 
 /usr/include/c++/12/bits/atomic_wait.h:
 
@@ -860,6 +869,12 @@ serverBase/callbacks/sendDataCb.hpp:
 
 /usr/include/c++/12/bits/basic_string.tcc:
 
+/usr/include/c++/12/bits/stl_algobase.h:
+
+serverBase/callbacks/dataSourceSetup.hpp:
+
+utils/resumeSingleCtx.hpp:
+
 /usr/include/c++/12/bits/charconv.h:
 
 /usr/include/c++/12/bits/uses_allocator_args.h:
@@ -870,21 +885,9 @@ serverBase/callbacks/sendDataCb.hpp:
 
 /usr/include/c++/12/bits/concept_check.h:
 
-/usr/include/c++/12/bits/chrono.h:
-
-/usr/include/c++/12/clocale:
-
-/usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
-
-/usr/include/c++/12/backward/binders.h:
-
-/usr/include/linux/stddef.h:
-
-/usr/include/c++/12/bits/cxxabi_init_exception.h:
+/usr/include/x86_64-linux-gnu/bits/cpu-set.h:
 
 /usr/include/x86_64-linux-gnu/asm/posix_types_64.h:
-
-/usr/include/x86_64-linux-gnu/bits/cpu-set.h:
 
 /usr/include/c++/12/bits/stl_deque.h:
 
@@ -943,6 +946,10 @@ serverBase/callbacks/sendDataCb.hpp:
 /usr/lib/gcc/x86_64-linux-gnu/12/include/stdint.h:
 
 /usr/include/c++/12/ratio:
+
+/usr/include/x86_64-linux-gnu/bits/sigevent-consts.h:
+
+/usr/include/linux/time_types.h:
 
 /usr/include/c++/12/stack:
 
@@ -1093,7 +1100,3 @@ serverBase/callbacks/sendDataCb.hpp:
 /usr/include/x86_64-linux-gnu/bits/posix_opt.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
-
-/usr/include/linux/time_types.h:
-
-/usr/include/x86_64-linux-gnu/bits/sigevent-consts.h:

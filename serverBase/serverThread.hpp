@@ -33,14 +33,18 @@ inline void destroySessionContext(int epollFd, sessionCtx* sCtx){
     delete sCtx;
 }
 
+inline int epollFd = -1; // needed as the thread scope has to access the epoll at many points
 void serverWorker(int controlPipe){
+
+    uint8_t outgoingBUffer[128000];
+    const uint8_t* bPointer;
     
     unsigned head = 0;
     io_uring_cqe* cqe = nullptr;
     int evfd = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     io_uring_register_eventfd(&ring, evfd);
 
-    int epollFd = epoll_create1(0);
+    epollFd = epoll_create1(0);
     if (epollFd == -1) {
         std::perror("epoll_create1");
         return;
@@ -75,13 +79,15 @@ void serverWorker(int controlPipe){
         printf("waiting for epoll events on pipe: %d\n", controlPipe);
         int n = epoll_wait(epollFd, events, 1, -1);
 
+
         //completion handler for cqes
         if(events[0].data.fd == evfd){
             uint64_t eventfdBlackHole;
             printf("Processing uring events\n");
             unsigned count = 0;
             io_uring_for_each_cqe(&ring, head, cqe) {
-                cqeFinish(cqe);
+                //cqeFinish(cqe); This holds the ugly splice stuff, removed for now, if ever
+
                 count++;
                 read(evfd, &eventfdBlackHole, 8);
             }
@@ -140,6 +146,27 @@ void serverWorker(int controlPipe){
             }
 
             ssize_t received = nghttp2_session_mem_recv(sCtx->session, staticBuffer, static_cast<size_t>(bytesRead));
+
+            //greedy pushes
+            int wantWrite = nghttp2_session_want_write(sCtx->session);
+            if (wantWrite > 0) {
+                nghttp2_session_mem_send(sCtx->session, &bPointer);
+                
+                events[0].events = EPOLLOUT;
+                events[0].data.ptr = sCtx;
+                if (epoll_ctl(epollFd, EPOLL_CTL_MOD, sCtx->client->outgoingFd, &events[0]) == -1) {
+                    printf("epoll_ctl EPOLL_CTL_MOD");
+                }
+
+            }else{
+                events[0].events = EPOLLIN;
+                events[0].data.ptr = sCtx;
+                if (epoll_ctl(epollFd, EPOLL_CTL_MOD, sCtx->client->outgoingFd, &events[0]) == -1) {
+                    printf("epoll_ctl EPOLL_CTL_MOD");
+                }
+            }
+
+            
             printf("nghttp2_session_mem_recv returned: %zd", received);
             printf(" code being: %s\n", nghttp2_strerror(received));
 
@@ -150,4 +177,3 @@ void serverWorker(int controlPipe){
     }
 
 }
-

@@ -283,7 +283,9 @@ CMakeFiles/onDemandBackend.dir/main.cpp.o: \
  /usr/include/c++/12/bits/uses_allocator_args.h \
  /usr/include/c++/12/pstl/glue_memory_defs.h \
  /usr/include/c++/12/pstl/execution_defs.h \
+ /home/llf/onDemandFetcher/serverBase/callbacks/../../utils/resumeSingleCtx.hpp \
  /home/llf/onDemandFetcher/serverBase/callbacks/../../utils/subheaderStruct.hpp \
+ /home/llf/onDemandFetcher/serverBase/callbacks/../../utils/resumeBatchCtx.hpp \
  /home/llf/onDemandFetcher/serverBase/callbacks/dataSourceSetup.hpp \
  /home/llf/onDemandFetcher/serverBase/callbacks/datasourceCallback.hpp \
  /home/llf/onDemandFetcher/serverBase/callbacks/sendDataCb.hpp \
