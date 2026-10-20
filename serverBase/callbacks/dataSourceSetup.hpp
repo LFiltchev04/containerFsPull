@@ -13,7 +13,7 @@ int onFrameRecv(nghttp2_session *session, const nghttp2_frame *frame, void *user
     printf("frame received: type=%d\n", frame->hd.type);
     
 
-    if(frame->hd.type == NGHTTP2_HEADERS && frame->headers.cat == NGHTTP2_HCAT_REQUEST){
+    if(frame->hd.type == NGHTTP2_HEADERS){
     
         nghttp2_nv hdrs[2];
         if (frame->hd.type == NGHTTP2_HEADERS && frame->headers.cat == NGHTTP2_HCAT_REQUEST) {
@@ -35,5 +35,6 @@ int onFrameRecv(nghttp2_session *session, const nghttp2_frame *frame, void *user
         }
     }
     
+    printf("skipped? ");
     return 0;
 }

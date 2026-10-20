@@ -41,7 +41,7 @@ int onHeaderRecvCb(nghttp2_session *session,
         }
         printf("opened file descriptor: %d\n", ctx->openFd);
         
-
+        
     }
 
     

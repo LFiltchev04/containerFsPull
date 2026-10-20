@@ -14,7 +14,7 @@ int sendDataCb(nghttp2_session *session,
     nghttp2_frame *frame, 
     const uint8_t *framehd, 
     size_t length, 
-    nghttp2_data_source *source, 
+    nghttp2_data_source *source,
     void *user_data){
 
         if(frame->hd.type != NGHTTP2_DATA){
@@ -66,7 +66,7 @@ int sendDataCb(nghttp2_session *session,
             res += write(ctx->write->networkFd, sixtyFourKilobytes + res, length - res);
         }
 
-
+        printf("Sent DATA frame of length: %zu\n", length);
         ctx->write->offsetTrack += length;
         //apperently the pipe reads short, the goddamn thing wont stop annoying me today with nonsense.
         //prepUring(ctx->write, length);

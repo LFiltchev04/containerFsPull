@@ -23,6 +23,28 @@ struct sessionCtx{
     nghttp2_session* session;
 };
 
+inline bool drainSession(sessionCtx* sCtx){
+    const uint8_t* data = nullptr;
+    while (nghttp2_session_want_write(sCtx->session)) {
+        ssize_t length = nghttp2_session_mem_send(sCtx->session, &data);
+        
+
+        ssize_t written = 0;
+        while (written < length) {
+            ssize_t result = write(sCtx->client->outgoingFd, data + written, static_cast<size_t>(length - written));
+            if (result < 0 && errno == EINTR) {
+                continue;
+            }
+            if (result <= 0) {
+                printf("drain error\n");
+                return false;
+            }
+            written += result;
+        }
+    }
+    return true;
+}
+
 inline void destroySessionContext(int epollFd, sessionCtx* sCtx){
     epoll_ctl(epollFd, EPOLL_CTL_DEL, sCtx->client->outgoingFd, nullptr);
     close(sCtx->client->outgoingFd);
@@ -37,7 +59,6 @@ inline int epollFd = -1; // needed as the thread scope has to access the epoll a
 void serverWorker(int controlPipe){
 
     uint8_t outgoingBUffer[128000];
-    const uint8_t* bPointer;
     
     unsigned head = 0;
     io_uring_cqe* cqe = nullptr;
@@ -66,7 +87,8 @@ void serverWorker(int controlPipe){
 
     epoll_event ringEvent{};
     ringEvent.events = EPOLLIN;
-    ringEvent.data.fd = evfd;
+    static char evfdTag;
+    ringEvent.data.ptr = &evfdTag;
     if(epoll_ctl(epollFd, EPOLL_CTL_ADD, evfd, &ringEvent) == -1) {
         close(epollFd);
         throw std::exception();
@@ -75,13 +97,21 @@ void serverWorker(int controlPipe){
     epoll_event events[1];
     uint8_t staticBuffer[16384];
 
-    while (true) {
+    while (true) { ///// loop starts here 
+
+
+
         printf("waiting for epoll events on pipe: %d\n", controlPipe);
         int n = epoll_wait(epollFd, events, 1, -1);
-
+        if (n == -1) {
+            if (errno == EINTR) {
+                continue;
+            }
+            continue;
+        }
 
         //completion handler for cqes
-        if(events[0].data.fd == evfd){
+        if(events[0].data.ptr == &evfdTag){
             uint64_t eventfdBlackHole;
             printf("Processing uring events\n");
             unsigned count = 0;
@@ -98,8 +128,10 @@ void serverWorker(int controlPipe){
             continue;
         }
 
+        int tempCounter = 0;
+
         //ugly gate but it works, has to be last
-        if (events[0].data.ptr == nullptr) {
+        if (events[0].data.ptr == nullptr) { //accepts the new connections after te control pipe inits them
             socketCtx* clientCtx = nullptr;
             ssize_t bytesRead = read(controlPipe, &clientCtx, sizeof(clientCtx));
             printf("Read %zd bytes from control pipe\n", bytesRead);
@@ -121,7 +153,7 @@ void serverWorker(int controlPipe){
             nghttp2_session_server_new(&session, callbacks, clientCtx);
 
             
-            nghttp2_submit_settings(session, NGHTTP2_FLAG_NONE, &entr, 2);
+            nghttp2_submit_settings(session, NGHTTP2_FLAG_NONE, &entr, 1);
     
             
 
@@ -134,41 +166,54 @@ void serverWorker(int controlPipe){
                 close(clientCtx->outgoingFd);
                 delete clientCtx;
                 delete sCtx;
+            } else if (!drainSession(sCtx)) {
+                destroySessionContext(epollFd, sCtx);
             }
-        } else {
+        } else { //normal read path
             sessionCtx* sCtx = static_cast<sessionCtx*>(events[0].data.ptr);
-
+            tempCounter++;
+            printf("Temp counter: %d\n", tempCounter);
             ssize_t bytesRead = read(sCtx->client->outgoingFd, staticBuffer, sizeof(staticBuffer));
-            if (bytesRead == 0) {
+            if (bytesRead <= 0) {
+                if (bytesRead < 0 && errno == EINTR) {
+                    continue;
+                }
                 printf("Client closed the connection\n");
                 destroySessionContext(epollFd, sCtx);
                 continue;
             }
 
-            ssize_t received = nghttp2_session_mem_recv(sCtx->session, staticBuffer, static_cast<size_t>(bytesRead));
 
-            //greedy pushes
-            int wantWrite = nghttp2_session_want_write(sCtx->session);
-            if (wantWrite > 0) {
-                nghttp2_session_mem_send(sCtx->session, &bPointer);
-                
-                events[0].events = EPOLLOUT;
-                events[0].data.ptr = sCtx;
-                if (epoll_ctl(epollFd, EPOLL_CTL_MOD, sCtx->client->outgoingFd, &events[0]) == -1) {
-                    printf("epoll_ctl EPOLL_CTL_MOD");
-                }
+            ssize_t received = 0;
+            if(events[0].events & EPOLLIN){
+                printf("Epollin, skipping\n");
+                received = nghttp2_session_mem_recv(sCtx->session, staticBuffer, static_cast<size_t>(bytesRead));
+                continue;
+            }
 
-            }else{
-                events[0].events = EPOLLIN;
-                events[0].data.ptr = sCtx;
-                if (epoll_ctl(epollFd, EPOLL_CTL_MOD, sCtx->client->outgoingFd, &events[0]) == -1) {
-                    printf("epoll_ctl EPOLL_CTL_MOD");
+            if(events[0].events & EPOLLOUT){
+                while(nghttp2_session_want_write(sCtx->session)) {
+                    printf("Draining session\n");
+                    drainSession(sCtx);
                 }
             }
 
-            
+
+            if (nghttp2_session_want_write(sCtx->session)){
+                epoll_event clientEvent{};
+                clientEvent.events = EPOLLIN | EPOLLOUT;
+                clientEvent.data.ptr = sCtx;
+                epoll_ctl(epollFd, EPOLL_CTL_MOD, sCtx->client->outgoingFd, &clientEvent);
+            }else{
+                epoll_event clientEvent{};
+                clientEvent.events = EPOLLIN;
+                clientEvent.data.ptr = sCtx;
+                epoll_ctl(epollFd, EPOLL_CTL_MOD, sCtx->client->outgoingFd, &clientEvent);
+            }
+
             printf("nghttp2_session_mem_recv returned: %zd", received);
             printf(" code being: %s\n", nghttp2_strerror(received));
+            printf("nghttp2_session_want_write: %d\n", nghttp2_session_want_write(sCtx->session));
 
         }
 
