@@ -59,6 +59,7 @@ ssize_t dataReadCb(nghttp2_session *session,
     ctx->fileOffset += bytesToSend;
     if(ctx->fileOffset == fileSize) {
         *data_flags |= NGHTTP2_DATA_FLAG_EOF;
+        printf("           EOF ON PULL SIDE\n");
     }
 
     return static_cast<ssize_t>(bytesToSend);
